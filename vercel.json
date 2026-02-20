@@ -1,12 +1,8 @@
 {
-  "rewrites": [
-    { "source": "/api/referee", "destination": "/api/referee" },
-    { "source": "/api/opponent", "destination": "/api/opponent" },
-    { "source": "/(.*)", "destination": "/public/$1" }
-  ],
+  "buildCommand": "",
+  "outputDirectory": "public",
   "functions": {
     "api/*.py": {
-      "runtime": "@vercel/python@4",
       "maxDuration": 120
     }
   }
