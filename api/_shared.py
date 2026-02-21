@@ -10,7 +10,7 @@ import urllib.error
 
 DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions"
 DEEPSEEK_MODEL = "deepseek-chat"
-MAX_ACTION = 150
+MAX_ACTION = 200
 MAX_NAME = 30
 
 KV_URL = os.environ.get("KV_REST_API_URL", "") or os.environ.get("UPSTASH_REDIS_REST_URL", "")

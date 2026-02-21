@@ -449,10 +449,10 @@
     <div id="input-area" class="input-area">
       <div id="turn-label" class="turn-label"></div>
       <div class="action-input-row">
-        <input type="text" id="action-input" placeholder="Describe your action..." maxlength="150">
+        <input type="text" id="action-input" placeholder="Describe your action..." maxlength="200">
         <button id="submit-btn" class="submit-btn" onclick="submitAction()">GO</button>
       </div>
-      <div id="char-count" class="char-count">0 / 150</div>
+      <div id="char-count" class="char-count">0 / 200</div>
     </div>
 
     <button id="retry-btn" class="retry-btn hidden" onclick="retryTurn()">Retry</button>
@@ -1122,8 +1122,8 @@
   $("action-input").addEventListener("input", function() {
     const len = this.value.length;
     const counter = $("char-count");
-    counter.textContent = len + " / 150";
-    counter.className = len >= 130 ? "char-count warn" : "char-count";
+    counter.textContent = len + " / 200";
+    counter.className = len >= 180 ? "char-count warn" : "char-count";
   });
 
   async function doAiTurn() {

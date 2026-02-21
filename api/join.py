@@ -25,7 +25,7 @@ class handler(BaseHTTPRequestHandler):
         code = str(data.get("code", "")).strip().upper()
         player_name = sanitize_name(str(data.get("player_name", "")))
 
-        if not code or len(code) != 4:
+        if not code or len(code) != 6:
             self._respond(400, {"error": "Invalid game code"})
             return
 
