@@ -765,8 +765,7 @@
     $("game-area").classList.remove("hidden");
     $("actions-display").style.display = "none";
 
-    $("code-badge").textContent = "GAME: " + onlineCode;
-    $("code-badge").classList.remove("hidden");
+    $("code-badge").classList.add("hidden");
 
     $("p1-name").textContent = game.p1_name;
     $("p2-name").textContent = game.p2_name;
@@ -827,42 +826,40 @@
       $("waiting-name").textContent = oppName;
       $("status").textContent = "";
       startPolling(function(g) {
-        if (g.last_updated > lastUpdated) {
-          lastUpdated = g.last_updated;
-          state.p1_hp = g.p1_hp;
-          state.p2_hp = g.p2_hp;
-          state.situation = g.situation;
-          state.last_action = g.last_action;
-          turn = g.turn;
-          updateHP();
+        lastUpdated = g.last_updated;
+        state.p1_hp = g.p1_hp;
+        state.p2_hp = g.p2_hp;
+        state.situation = g.situation;
+        state.last_action = g.last_action;
+        turn = g.turn;
+        updateHP();
 
-          // Show last action
-          if (g.last_actor && g.last_actor_action) {
-            const actorName = g.last_actor === 1 ? g.p1_name : g.p2_name;
-            const cls = g.last_actor === 1 ? "p1-color" : "p2-color";
-            $("actions-display").style.display = "block";
-            $("p1-action").innerHTML = "";
-            $("p2-action").innerHTML = "";
-            const targetLine = g.last_actor === 1 ? $("p1-action") : $("p2-action");
-            const lbl = document.createElement("span");
-            lbl.className = cls;
-            lbl.textContent = actorName + " said: ";
-            const txt = document.createElement("span");
-            txt.className = "action-text";
-            txt.textContent = g.last_actor_action;
-            targetLine.appendChild(lbl);
-            targetLine.appendChild(txt);
-          }
-
-          stopPolling();
-          $("waiting-turn").classList.add("hidden");
-
-          (async function() {
-            if (g.narrative) await typewrite($("narrative"), g.narrative);
-            if (g.scene) $("scene").textContent = g.scene;
-            onlinePromptTurn(g);
-          })();
+        // Show last action
+        if (g.last_actor && g.last_actor_action) {
+          const actorName = g.last_actor === 1 ? g.p1_name : g.p2_name;
+          const cls = g.last_actor === 1 ? "p1-color" : "p2-color";
+          $("actions-display").style.display = "block";
+          $("p1-action").innerHTML = "";
+          $("p2-action").innerHTML = "";
+          const targetLine = g.last_actor === 1 ? $("p1-action") : $("p2-action");
+          const lbl = document.createElement("span");
+          lbl.className = cls;
+          lbl.textContent = actorName + " said: ";
+          const txt = document.createElement("span");
+          txt.className = "action-text";
+          txt.textContent = g.last_actor_action;
+          targetLine.appendChild(lbl);
+          targetLine.appendChild(txt);
         }
+
+        stopPolling();
+        $("waiting-turn").classList.add("hidden");
+
+        (async function() {
+          if (g.narrative) await typewrite($("narrative"), g.narrative);
+          if (g.scene) $("scene").textContent = g.scene;
+          onlinePromptTurn(g);
+        })();
       });
     }
   }
