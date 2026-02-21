@@ -75,6 +75,8 @@ class handler(BaseHTTPRequestHandler):
         game["last_action"] = state_update.get("last_action", "")
         game["narrative"] = narrative
         game["scene"] = scene
+        game["image_safe"] = state_update.get("image_safe", False)
+        game["image_prompt"] = state_update.get("image_prompt", "")
         game["turn"] = game.get("turn", 1) + 1
         game["current_player"] = 2 if player_num == 1 else 1
         game["last_updated"] = time.time()

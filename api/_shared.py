@@ -35,7 +35,7 @@ YOU MUST RESPOND IN EXACTLY THIS FORMAT (use these exact markers on their own li
 ASCII art scene. ALWAYS 8-12 lines tall, up to 50 characters wide. Show both players and the action. Keep it simple and readable. NEVER go below 8 lines — fill the scene with environment details, action effects, or dramatic framing.
 
 ===STATE===
-{"p1_hp": <int>, "p2_hp": <int>, "situation": "<one short sentence: what matters right now>", "last_action": "<what just happened in one sentence>"}
+{"p1_hp": <int>, "p2_hp": <int>, "situation": "<one short sentence: what matters right now>", "last_action": "<what just happened in one sentence>", "image_safe": <true or false>, "image_prompt": "<visual scene description for AI image generation, or empty string>"}
 
 CRITICAL RULES FOR YOUR RESPONSE:
 - Output ONLY the three sections above with their markers. Nothing before ===NARRATIVE===, nothing after the JSON.
@@ -44,7 +44,14 @@ CRITICAL RULES FOR YOUR RESPONSE:
 - The "situation" field must be ONE short sentence. Not a paragraph. Not a list. Just the key thing happening right now.
 - If a player reaches 0 HP, set their HP to 0 and make the narrative describe their defeat dramatically.
 - Never break character. You ARE the referee. This is YOUR arena.
-- Do NOT wrap the ASCII art in markdown code fences (no ``` blocks). Output the art as raw text."""
+- Do NOT wrap the ASCII art in markdown code fences (no ``` blocks). Output the art as raw text.
+
+IMAGE GENERATION RULES:
+- "image_safe" must be true or false. Set to true if the scene can be illustrated as a fun, dramatic, creative battle image. Set to false if the scene involves graphic gore, nudity, sexually explicit content, or extreme real-world violence.
+- "image_prompt" is a 1-2 sentence visual description of the scene for an AI image generator. Describe it like a dynamic illustration: the characters, the action, the environment, the mood. Make it vivid and cinematic. Use art style cues like "dramatic lighting", "comic book style", "epic battle scene".
+- If image_safe is false, set image_prompt to an empty string "".
+- The image prompt should NOT include text/words to render — image generators can't spell. Describe visuals only.
+- Keep it fun and creative — explosions, absurd weapons, cosmic battles, summoned creatures are all GREAT image prompts. Just no gore, blood, nudity, or sexual content."""
 
 
 def call_deepseek(system_prompt, user_prompt, max_tokens=1000):

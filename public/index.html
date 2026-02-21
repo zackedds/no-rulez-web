@@ -236,6 +236,22 @@
     cursor: pointer;
   }
 
+  .scene-image-wrapper {
+    margin: 6px 0;
+  }
+  .scene-image-wrapper img {
+    width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+    border: 1px solid #333;
+    display: block;
+  }
+  .scene-image-wrapper .img-loading {
+    color: #666;
+    font-size: 11px;
+    padding: 8px 0;
+  }
+
   .scene-container {
     position: relative;
     overflow-x: auto;
@@ -443,6 +459,7 @@
     <div id="narrative"></div>
     <div class="sep" id="sep-mid"></div>
 
+    <div id="scene-image-wrapper" class="scene-image-wrapper" style="display:none;"></div>
     <div class="scene-container">
       <pre id="scene"></pre>
     </div>
@@ -885,6 +902,13 @@
         stopPolling();
         $("waiting-turn").classList.add("hidden");
 
+        // Fire off image generation async for online turns
+        if (g.image_safe && g.image_prompt) {
+          generateImage(g.image_prompt);
+        } else {
+          $("scene-image-wrapper").style.display = "none";
+        }
+
         (async function() {
           if (g.narrative) await typewrite($("narrative"), g.narrative);
           if (g.scene) $("scene").textContent = g.scene;
@@ -1133,6 +1157,13 @@
       targetLine.appendChild(lbl);
       targetLine.appendChild(txt);
 
+      // Fire off image generation async
+      if (g.image_safe && g.image_prompt) {
+        generateImage(g.image_prompt);
+      } else {
+        $("scene-image-wrapper").style.display = "none";
+      }
+
       if (g.narrative) await typewrite($("narrative"), g.narrative);
       if (g.scene) $("scene").textContent = g.scene;
       updateHP();
@@ -1196,6 +1227,31 @@
     }
   }
 
+  function generateImage(prompt) {
+    if (!prompt) return;
+    const wrapper = $("scene-image-wrapper");
+    wrapper.style.display = "block";
+    wrapper.innerHTML = '<div class="img-loading">Generating image...</div>';
+    fetch("/api/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: prompt }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.image_url) {
+        const img = document.createElement("img");
+        img.src = data.image_url;
+        img.alt = "Battle scene";
+        img.onload = function() { wrapper.innerHTML = ""; wrapper.appendChild(img); };
+        img.onerror = function() { wrapper.style.display = "none"; };
+      } else {
+        wrapper.style.display = "none";
+      }
+    })
+    .catch(() => { wrapper.style.display = "none"; });
+  }
+
   async function resolveAction(playerName, playerNum, action) {
     $("status").textContent = "The referee deliberates...";
     try {
@@ -1220,6 +1276,14 @@
       state.last_action = data.state.last_action;
       $("input-area").style.display = "none";
       $("status").textContent = "";
+
+      // Fire off image generation async (don't block game)
+      if (data.state.image_safe && data.state.image_prompt) {
+        generateImage(data.state.image_prompt);
+      } else {
+        $("scene-image-wrapper").style.display = "none";
+      }
+
       await typewrite($("narrative"), data.narrative);
       $("scene").textContent = data.scene;
       updateHP();
