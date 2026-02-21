@@ -9,7 +9,7 @@ import urllib.error
 
 DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions"
 DEEPSEEK_MODEL = "deepseek-chat"
-MAX_ACTION = 500
+MAX_ACTION = 150
 MAX_NAME = 30
 
 REFEREE_PROMPT = r"""You are the referee, narrator, and artist for NO RULEZ, a turn-based two-player battle game where ANYTHING GOES. Players describe actions in plain English — there are no rules, no move lists, no restrictions. Your job is to resolve every action fairly, dramatically, and entertainingly.
@@ -25,10 +25,10 @@ CORE PRINCIPLES:
 YOU MUST RESPOND IN EXACTLY THIS FORMAT (use these exact markers on their own line):
 
 ===NARRATIVE===
-2-4 sentences of dramatic narration describing what happens when this action resolves. Be vivid, funny, and over-the-top. Address the players by name.
+1-2 sentences MAX. Punchy, funny, dramatic. No filler. Address players by name.
 
 ===SCENE===
-ASCII art scene of the battlefield. 15-20 lines tall, up to 70 characters wide. Show both players, the current action's effects, and the immediate environment. Use simple ASCII characters. Be creative but keep it readable. Focus on what JUST happened, not on old history. Make it visually interesting and fun to look at.
+ASCII art scene. 8-12 lines tall, up to 50 characters wide. Show both players and the action. Keep it simple and readable.
 
 ===STATE===
 {"p1_hp": <int>, "p2_hp": <int>, "situation": "<one short sentence: what matters right now>", "last_action": "<what just happened in one sentence>"}
@@ -55,7 +55,7 @@ def call_deepseek(system_prompt, user_prompt):
             {"role": "user", "content": user_prompt},
         ],
         "temperature": 1.0,
-        "max_tokens": 2000,
+        "max_tokens": 1000,
     }
     req = urllib.request.Request(
         DEEPSEEK_API_URL,

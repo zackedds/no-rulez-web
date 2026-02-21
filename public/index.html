@@ -164,7 +164,7 @@
     font-size: 14px;
   }
   #action-input:focus { outline: none; border-color: #f1fa8c; }
-  .submit-btn, .next-btn, .retry-btn {
+  .submit-btn, .retry-btn {
     padding: 10px 20px;
     background: #2a2a4e;
     color: #50fa7b;
@@ -174,8 +174,8 @@
     cursor: pointer;
     white-space: nowrap;
   }
-  .submit-btn:hover, .next-btn:hover, .retry-btn:hover { background: #3a3a5e; }
-  .submit-btn:disabled, .next-btn:disabled {
+  .submit-btn:hover, .retry-btn:hover { background: #3a3a5e; }
+  .submit-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
   }
@@ -198,7 +198,34 @@
     font-size: 13px;
   }
 
+  /* Character counter */
+  .char-count {
+    color: #666;
+    font-size: 11px;
+    text-align: right;
+    margin-top: 4px;
+  }
+  .char-count.warn { color: #ff5555; }
+
   .hidden { display: none !important; }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    .banner { font-size: 7px; margin-bottom: 10px; }
+    #narrative { font-size: 13px; min-height: 40px; }
+    #scene { font-size: 9px; line-height: 1.2; overflow-x: auto; }
+    .hp-name { width: 80px; font-size: 12px; }
+    .hp-value { font-size: 12px; min-width: 40px; }
+    .hp-bar-bg { max-width: 200px; height: 14px; }
+    .mode-btn { font-size: 13px; padding: 10px 15px; }
+    .name-input { width: 160px; }
+    #action-input { font-size: 16px; padding: 10px; }
+    .submit-btn, .retry-btn { padding: 10px 15px; font-size: 13px; }
+    .actions-display .action-line { font-size: 11px; }
+    .game-over { font-size: 10px; }
+    .sep { font-size: 10px; overflow: hidden; }
+  }
 </style>
 </head>
 <body>
@@ -228,7 +255,6 @@
     <h2>SELECT MODE</h2>
     <button class="mode-btn" onclick="selectMode('pvp')">[1] Player vs Player</button>
     <button class="mode-btn" onclick="selectMode('vs_ai')">[2] Player vs DeepSeek</button>
-    <button class="mode-btn" onclick="selectMode('ai_vs_ai')">[3] DeepSeek vs DeepSeek</button>
     <div id="name-inputs" class="hidden" style="margin-top:20px;"></div>
   </div>
 
@@ -267,13 +293,11 @@
     <div id="input-area" class="input-area">
       <div id="turn-label" class="turn-label"></div>
       <div class="action-input-row">
-        <input type="text" id="action-input" placeholder="Describe your action (anything goes)..." maxlength="500">
+        <input type="text" id="action-input" placeholder="Describe your action..." maxlength="150">
         <button id="submit-btn" class="submit-btn" onclick="submitAction()">GO</button>
       </div>
+      <div id="char-count" class="char-count">0 / 150</div>
     </div>
-
-    <!-- Next turn button (AI vs AI) -->
-    <button id="next-btn" class="next-btn hidden" onclick="nextAiTurn()">Next Turn</button>
 
     <!-- Retry button -->
     <button id="retry-btn" class="retry-btn hidden" onclick="retryTurn()">Retry</button>
@@ -289,7 +313,7 @@
   "use strict";
 
   // --- Game state ---
-  let mode = null;        // 'pvp', 'vs_ai', 'ai_vs_ai'
+  let mode = null;        // 'pvp', 'vs_ai'
   let state = null;
   let turn = 1;
   let p1Action = "";
@@ -306,20 +330,7 @@
     const box = $("name-inputs");
     box.classList.remove("hidden");
 
-    if (m === "ai_vs_ai") {
-      box.innerHTML = "";
-      const info = document.createElement("p");
-      info.textContent = "ALPHA vs OMEGA — two AIs enter, one AI leaves!";
-      info.style.color = "#bd93f9";
-      info.style.fontWeight = "bold";
-      info.style.marginBottom = "10px";
-      box.appendChild(info);
-      const btn = document.createElement("button");
-      btn.className = "start-btn";
-      btn.textContent = "START";
-      btn.onclick = () => startGame("ALPHA", "OMEGA");
-      box.appendChild(btn);
-    } else if (m === "vs_ai") {
+    if (m === "vs_ai") {
       box.innerHTML = "";
       const label = document.createElement("div");
       label.textContent = "Your name:";
@@ -514,8 +525,7 @@
   }
 
   function isAiTurn() {
-    const pn = currentPlayer();
-    return mode === "ai_vs_ai" || (mode === "vs_ai" && pn === 2);
+    return mode === "vs_ai" && currentPlayer() === 2;
   }
 
   function promptTurn() {
@@ -532,22 +542,12 @@
     const color = pn === 1 ? "p1-color" : "p2-color";
 
     if (isAiTurn()) {
-      if (mode === "ai_vs_ai") {
-        $("input-area").style.display = "none";
-        $("next-btn").classList.remove("hidden");
-        $("next-btn").disabled = false;
-        $("status").textContent = "Press Next Turn to continue.";
-      } else {
-        // vs_ai, AI turn auto-fires after a pause so player can read
-        $("input-area").style.display = "none";
-        $("next-btn").classList.add("hidden");
-        $("status").textContent = "DeepSeek is preparing...";
-        setTimeout(() => {
-          doAiTurn();
-        }, 3000);
-      }
+      $("input-area").style.display = "none";
+      $("status").textContent = "DeepSeek is preparing...";
+      setTimeout(() => {
+        doAiTurn();
+      }, 3000);
     } else {
-      $("next-btn").classList.add("hidden");
       $("input-area").style.display = "block";
       const label = $("turn-label");
       label.textContent = name + "'s turn!";
@@ -584,12 +584,14 @@
     }
   });
 
-  // --- AI turn ---
-  window.nextAiTurn = function() {
-    $("next-btn").disabled = true;
-    doAiTurn();
-  };
+  $("action-input").addEventListener("input", function() {
+    const len = this.value.length;
+    const counter = $("char-count");
+    counter.textContent = len + " / 150";
+    counter.className = len >= 130 ? "char-count warn" : "char-count";
+  });
 
+  // --- AI turn ---
   async function doAiTurn() {
     const pn = currentPlayer();
     const name = pn === 1 ? state.p1_name : state.p2_name;
@@ -610,7 +612,6 @@
         $("status").textContent = "Error: " + (err.error || "Unknown");
         pendingRetry = { type: "ai", pn, name };
         $("retry-btn").classList.remove("hidden");
-        $("next-btn").classList.add("hidden");
         return;
       }
       const data = await resp.json();
@@ -671,7 +672,6 @@
 
       // Render
       $("input-area").style.display = "none";
-      $("next-btn").classList.add("hidden");
       $("status").textContent = "";
 
       await typewrite($("narrative"), data.narrative);
