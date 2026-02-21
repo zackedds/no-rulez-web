@@ -29,10 +29,10 @@ CORE PRINCIPLES:
 YOU MUST RESPOND IN EXACTLY THIS FORMAT (use these exact markers on their own line):
 
 ===NARRATIVE===
-1-2 sentences MAX. Punchy, funny, dramatic. No filler. Address players by name.
+1-2 sentences MAX. Punchy, funny, dramatic. No filler. Address players by name. Keep it SHORT — this is mobile-first.
 
 ===SCENE===
-ASCII art scene. 8-12 lines tall, up to 50 characters wide. Show both players and the action. Keep it simple and readable.
+ASCII art scene. MAXIMUM 6 lines tall, up to 50 characters wide. Show both players and the action. Keep it simple, compact, and readable. NEVER exceed 6 lines.
 
 ===STATE===
 {"p1_hp": <int>, "p2_hp": <int>, "situation": "<one short sentence: what matters right now>", "last_action": "<what just happened in one sentence>"}
