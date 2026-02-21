@@ -698,8 +698,8 @@
     box.appendChild(label2);
     const codeInp = document.createElement("input");
     codeInp.className = "code-input";
-    codeInp.maxLength = 4;
-    codeInp.placeholder = "ABCD";
+    codeInp.maxLength = 6;
+    codeInp.placeholder = "123456";
     box.appendChild(codeInp);
     box.appendChild(document.createElement("br"));
     const err = document.createElement("div");
@@ -722,7 +722,7 @@
 
   async function doJoin(name, code, btn, errEl) {
     if (!name) name = "Player 2";
-    if (!code || code.length !== 4) { errEl.textContent = "Enter a 4-character code."; return; }
+    if (!code || code.length !== 6) { errEl.textContent = "Enter a 6-digit code."; return; }
     btn.disabled = true;
     btn.textContent = "Joining...";
     errEl.textContent = "";
@@ -880,7 +880,7 @@
         .catch(() => {}); // silent fail, will retry
     }
     doPoll();
-    pollTimer = setInterval(doPoll, 3000);
+    pollTimer = setInterval(doPoll, 2000);
     // Resume polling when tab becomes visible
     document.addEventListener("visibilitychange", onVisChange);
   }

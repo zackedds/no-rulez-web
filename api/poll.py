@@ -27,7 +27,7 @@ class handler(BaseHTTPRequestHandler):
         if since:
             try:
                 since_ts = float(since)
-                if game.get("last_updated", 0) <= since_ts:
+                if game.get("last_updated", 0) < since_ts + 0.001:
                     self._respond(200, {"changed": False})
                     return
             except (ValueError, TypeError):

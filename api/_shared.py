@@ -192,7 +192,7 @@ def kv_del(key):
 
 
 # Code generation for game codes
-SAFE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+SAFE_CHARS = "0123456789"
 
 def generate_code():
-    return "".join(random.choice(SAFE_CHARS) for _ in range(4))
+    return "".join(random.choice(SAFE_CHARS) for _ in range(6))
