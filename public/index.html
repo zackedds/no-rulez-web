@@ -15,6 +15,7 @@
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    touch-action: manipulation;
   }
   #game-container {
     max-width: 750px;
@@ -22,16 +23,33 @@
     text-align: left;
   }
 
-  /* Banner */
-  .banner {
-    color: #ff5555;
-    font-weight: bold;
-    white-space: pre;
-    font-size: 11px;
-    line-height: 1.2;
+  /* CSS Logo */
+  .logo {
+    text-align: center;
     margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
+    user-select: none;
+  }
+  .logo-title {
+    font-size: clamp(3rem, 15vw, 7rem);
+    font-weight: 900;
+    color: #ff5555;
+    text-shadow: 0 0 10px #ff5555, 0 0 20px #ff5555, 0 0 40px #ff3333;
+    line-height: 0.9;
+    letter-spacing: 0.05em;
+    animation: flicker 4s infinite;
+  }
+  .logo-subtitle {
+    color: #f1fa8c;
+    font-size: clamp(0.65rem, 2.5vw, 0.9rem);
+    margin-top: 10px;
+    letter-spacing: 0.15em;
+  }
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.8; }
+    97% { opacity: 1; }
+    98% { opacity: 0.7; }
+    99% { opacity: 1; }
   }
 
   /* Mode select */
@@ -42,7 +60,7 @@
     width: 100%;
     max-width: 400px;
     margin: 8px auto;
-    padding: 12px 20px;
+    padding: 14px 20px;
     background: #1a1a2e;
     color: #e0e0e0;
     border: 1px solid #444;
@@ -56,15 +74,15 @@
     background: #111;
     color: #e0e0e0;
     border: 1px solid #555;
-    padding: 8px 12px;
+    padding: 10px 12px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 16px;
     width: 200px;
     margin: 5px;
   }
   .name-input:focus { outline: none; border-color: #f1fa8c; }
   .start-btn {
-    padding: 10px 30px;
+    padding: 12px 30px;
     background: #2a2a4e;
     color: #50fa7b;
     border: 1px solid #50fa7b;
@@ -93,7 +111,7 @@
   .dim { color: #666; }
 
   /* Separator */
-  .sep { color: #f1fa8c; font-weight: bold; }
+  .sep { color: #f1fa8c; font-weight: bold; overflow: hidden; }
 
   /* Narrative */
   #narrative {
@@ -102,18 +120,31 @@
     color: #f8f8f2;
     font-weight: bold;
     min-height: 60px;
-    line-height: 1.5;
+    line-height: 1.6;
     cursor: pointer;
   }
 
   /* Scene */
+  .scene-container {
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 10px 0;
+  }
   #scene {
     color: #8be9fd;
     font-size: 12px;
     line-height: 1.3;
-    margin: 10px 0;
     min-height: 50px;
     white-space: pre;
+    margin: 0;
+  }
+  .scroll-hint {
+    display: none;
+    text-align: center;
+    color: #666;
+    font-size: 11px;
+    margin-top: 4px;
   }
 
   /* HP Bars */
@@ -162,7 +193,7 @@
     border: 1px solid #555;
     padding: 10px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 16px;
   }
   #action-input:focus { outline: none; border-color: #f1fa8c; }
   .submit-btn, .retry-btn {
@@ -191,12 +222,24 @@
 
   /* Game over */
   .game-over {
+    display: none;
     text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    border: 2px solid #bd93f9;
+    background: #1a1a2e;
+  }
+  .game-over-title {
     color: #bd93f9;
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-shadow: 0 0 10px #bd93f9, 0 0 20px #bd93f9;
+    margin-bottom: 10px;
+  }
+  .game-over-winner {
+    color: #50fa7b;
+    font-size: 1.1rem;
     font-weight: bold;
-    margin: 20px 0;
-    white-space: pre;
-    font-size: 13px;
   }
 
   /* Character counter */
@@ -212,44 +255,59 @@
 
   /* Mobile */
   @media (max-width: 600px) {
-    body { padding: 10px; }
-    .banner { font-size: 7px; margin-bottom: 10px; }
-    #narrative { font-size: 13px; min-height: 40px; }
-    #scene { font-size: 9px; line-height: 1.2; overflow-x: auto; }
-    .hp-name { width: 80px; font-size: 12px; }
-    .hp-value { font-size: 12px; min-width: 40px; }
-    .hp-bar-bg { max-width: 200px; height: 14px; }
-    .mode-btn { font-size: 13px; padding: 10px 15px; }
-    .name-input { width: 160px; }
-    #action-input { font-size: 16px; padding: 10px; }
-    .submit-btn, .retry-btn { padding: 10px 15px; font-size: 13px; }
-    .actions-display .action-line { font-size: 11px; }
-    .game-over { font-size: 10px; }
-    .sep { font-size: 10px; overflow: hidden; }
+    body { padding: 10px; font-size: 15px; }
+    .logo { margin-bottom: 15px; }
+
+    /* Scene scroll hint */
+    .scroll-hint { display: block; }
+
+    /* HP: stack name above bar */
+    .hp-row {
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+    .hp-name {
+      width: 100%;
+      text-align: left;
+      margin-right: 0;
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+    .hp-bar-bg { max-width: none; height: 16px; }
+    .hp-value { font-size: 12px; min-width: 50px; }
+
+    /* Input: stack vertically */
+    .action-input-row {
+      flex-direction: column;
+    }
+    #action-input { width: 100%; }
+    .submit-btn, .retry-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+    }
+
+    /* Mode buttons: bigger touch targets */
+    .mode-btn { padding: 16px 20px; font-size: 15px; }
+    .name-input { width: 100%; margin: 5px 0; }
+    .start-btn { width: 100%; padding: 14px; font-size: 15px; }
+
+    /* Narrative */
+    #narrative { font-size: 14px; line-height: 1.7; }
+    .actions-display .action-line { font-size: 12px; }
+
+    .sep { font-size: 10px; }
   }
 </style>
 </head>
 <body>
 <div id="game-container">
 
-  <!-- Banner -->
-  <div class="banner">
-╔════════════════════════════════════════════════════╗
-║              ███╗   ██╗ ██████╗                    ║
-║              ████╗  ██║██╔═══██╗                   ║
-║              ██╔██╗ ██║██║   ██║                   ║
-║              ██║╚██╗██║██║   ██║                   ║
-║              ██║ ╚████║╚██████╔╝                   ║
-║              ╚═╝  ╚═══╝ ╚═════╝                    ║
-║  ██████╗ ██╗   ██╗██╗     ███████╗███████╗███████╗ ║
-║  ██╔══██╗██║   ██║██║     ██╔════╝╚══███╔╝██╔════╝ ║
-║  ██████╔╝██║   ██║██║     █████╗    ███╔╝ █████╗   ║
-║  ██╔══██╗██║   ██║██║     ██╔══╝   ███╔╝  ██╔══╝   ║
-║  ██║  ██║╚██████╔╝███████╗███████╗███████╗███████╗ ║
-║  ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝╚══════╝╚══════╝ ║
-║                                                    ║
-║         WEB EDITION — ANYTHING GOES.               ║
-╚════════════════════════════════════════════════════╝</div>
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-title">NO<br>RULEZ</div>
+    <div class="logo-subtitle">WEB EDITION — ANYTHING GOES.</div>
+  </div>
 
   <!-- Setup -->
   <div id="setup" class="setup">
@@ -271,7 +329,10 @@
     <div id="narrative"></div>
     <div class="sep" id="sep-mid"></div>
 
-    <pre id="scene"></pre>
+    <div class="scene-container">
+      <pre id="scene"></pre>
+      <div class="scroll-hint">← scroll →</div>
+    </div>
 
     <div class="sep" id="sep-bot"></div>
     <div class="hp-section">
@@ -304,7 +365,10 @@
     <button id="retry-btn" class="retry-btn hidden" onclick="retryTurn()">Retry</button>
 
     <!-- Game over -->
-    <div id="game-over" class="game-over hidden"></div>
+    <div id="game-over" class="game-over">
+      <div class="game-over-title">GAME OVER</div>
+      <div id="game-over-winner" class="game-over-winner"></div>
+    </div>
   </div>
 
 </div>
@@ -313,19 +377,16 @@
 (function() {
   "use strict";
 
-  // --- Game state ---
-  let mode = null;        // 'pvp', 'vs_ai'
+  let mode = null;
   let state = null;
   let turn = 1;
   let p1Action = "";
   let p2Action = "";
-  let typewriterAbort = null;  // function to skip typewriter
-  let pendingRetry = null;     // data for retry
+  let typewriterAbort = null;
+  let pendingRetry = null;
 
-  // --- DOM refs ---
   const $ = id => document.getElementById(id);
 
-  // --- Mode selection ---
   window.selectMode = function(m) {
     mode = m;
     const box = $("name-inputs");
@@ -422,18 +483,15 @@
     promptTurn();
   }
 
-  // --- HP ---
   function updateHP() {
     $("p1-hp").textContent = state.p1_hp + " HP";
     $("p2-hp").textContent = state.p2_hp + " HP";
     $("p1-bar").style.width = state.p1_hp + "%";
     $("p2-bar").style.width = state.p2_hp + "%";
-    // Color shift at low HP
     $("p1-bar").style.backgroundColor = state.p1_hp <= 25 ? "#ff2222" : "#ff5555";
     $("p2-bar").style.backgroundColor = state.p2_hp <= 25 ? "#4455aa" : "#6272a4";
   }
 
-  // --- Actions display ---
   function updateActionsDisplay() {
     const disp = $("actions-display");
     const a1 = $("p1-action");
@@ -458,7 +516,6 @@
       a1.appendChild(lbl);
       a1.appendChild(txt);
     } else {
-      a1.innerHTML = "";
       const s = document.createElement("span");
       s.className = "dim";
       s.textContent = state.p1_name + ": waiting...";
@@ -475,7 +532,6 @@
       a2.appendChild(lbl);
       a2.appendChild(txt);
     } else {
-      a2.innerHTML = "";
       const s = document.createElement("span");
       s.className = "dim";
       s.textContent = state.p2_name + ": waiting...";
@@ -483,7 +539,6 @@
     }
   }
 
-  // --- Typewriter ---
   function typewrite(el, text) {
     return new Promise(resolve => {
       el.textContent = "";
@@ -520,7 +575,6 @@
     });
   }
 
-  // --- Turn logic ---
   function currentPlayer() {
     return turn % 2 === 1 ? 1 : 2;
   }
@@ -531,7 +585,7 @@
 
   function promptTurn() {
     $("retry-btn").classList.add("hidden");
-    $("game-over").classList.add("hidden");
+    $("game-over").style.display = "none";
 
     if (state.p1_hp <= 0 || state.p2_hp <= 0) {
       showGameOver();
@@ -562,7 +616,6 @@
     }
   }
 
-  // --- Submit human action ---
   window.submitAction = function() {
     const input = $("action-input");
     const action = input.value.trim();
@@ -592,7 +645,6 @@
     counter.className = len >= 130 ? "char-count warn" : "char-count";
   });
 
-  // --- AI turn ---
   async function doAiTurn() {
     const pn = currentPlayer();
     const name = pn === 1 ? state.p1_name : state.p2_name;
@@ -628,11 +680,9 @@
       $("status").textContent = "Network error. Check your connection.";
       pendingRetry = { type: "ai", pn, name };
       $("retry-btn").classList.remove("hidden");
-      $("next-btn").classList.add("hidden");
     }
   }
 
-  // --- Resolve with referee ---
   async function resolveAction(playerName, playerNum, action) {
     $("status").textContent = "The referee deliberates...";
 
@@ -659,19 +709,16 @@
         pendingRetry = { type: "resolve", playerName, playerNum, action };
         $("retry-btn").classList.remove("hidden");
         $("input-area").style.display = "none";
-        $("next-btn").classList.add("hidden");
         return;
       }
 
       const data = await resp.json();
 
-      // Update state
       state.p1_hp = data.state.p1_hp;
       state.p2_hp = data.state.p2_hp;
       state.situation = data.state.situation;
       state.last_action = data.state.last_action;
 
-      // Render
       $("input-area").style.display = "none";
       $("status").textContent = "";
 
@@ -687,11 +734,9 @@
       pendingRetry = { type: "resolve", playerName, playerNum, action };
       $("retry-btn").classList.remove("hidden");
       $("input-area").style.display = "none";
-      $("next-btn").classList.add("hidden");
     }
   }
 
-  // --- Retry ---
   window.retryTurn = function() {
     $("retry-btn").classList.add("hidden");
     if (!pendingRetry) { promptTurn(); return; }
@@ -704,22 +749,14 @@
     pendingRetry = null;
   };
 
-  // --- Game over ---
   function showGameOver() {
     $("input-area").style.display = "none";
-    $("next-btn").classList.add("hidden");
     $("status").textContent = "";
 
     const winner = state.p1_hp <= 0 ? state.p2_name : state.p1_name;
     const el = $("game-over");
-    el.classList.remove("hidden");
-    el.textContent =
-      "╔══════════════════════════════════════════════════╗\n" +
-      "║                  GAME OVER                       ║\n" +
-      "║                                                  ║\n" +
-      "║   " + winner.padStart(24).padEnd(44) +  "   ║\n" +
-      "║                 WINS THE MATCH!                  ║\n" +
-      "╚══════════════════════════════════════════════════╝";
+    el.style.display = "block";
+    $("game-over-winner").textContent = winner + " WINS THE MATCH!";
   }
 
 })();

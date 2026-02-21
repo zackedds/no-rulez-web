@@ -35,7 +35,7 @@ def call_deepseek(system_prompt, user_prompt):
             {"role": "user", "content": user_prompt},
         ],
         "temperature": 1.0,
-        "max_tokens": 2000,
+        "max_tokens": 100,
     }
     req = urllib.request.Request(
         DEEPSEEK_API_URL,
