@@ -3,6 +3,9 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import time
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
+
 from _shared import kv_set, kv_get, sanitize_name
 
 

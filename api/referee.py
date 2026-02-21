@@ -2,6 +2,9 @@
 
 from http.server import BaseHTTPRequestHandler
 import json
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
+
 from _shared import (
     call_deepseek, parse_response, sanitize_name, sanitize_action,
     clamp_hp, build_turn_prompt, REFEREE_PROMPT,

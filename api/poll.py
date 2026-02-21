@@ -3,6 +3,9 @@
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import json
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
+
 from _shared import kv_get
 
 
