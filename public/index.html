@@ -28,14 +28,17 @@
     margin-bottom: 20px;
     user-select: none;
   }
-  .logo-title {
-    font-size: clamp(3rem, 15vw, 7rem);
-    font-weight: 900;
-    color: #ff5555;
-    text-shadow: 0 0 10px #ff5555, 0 0 20px #ff5555, 0 0 40px #ff3333;
-    line-height: 0.9;
-    letter-spacing: 0.05em;
-    animation: flicker 4s infinite;
+  .logo-head {
+    width: clamp(80px, 25vw, 150px);
+    display: block;
+    margin: 0 auto 10px;
+    filter: drop-shadow(0 0 10px rgba(255,85,85,0.5));
+  }
+  .logo-text {
+    width: clamp(200px, 60vw, 400px);
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 10px rgba(255,85,85,0.4));
   }
   .logo-subtitle {
     color: #f1fa8c;
@@ -390,7 +393,8 @@
 <div id="game-container">
 
   <div class="logo">
-    <div class="logo-title">NO<br>RULEZ</div>
+    <img src="/logo-head.png" alt="No Rulez" class="logo-head">
+    <img src="/no-rulez-logo.png" alt="No Rulez" class="logo-text">
     <div class="logo-subtitle">WEB EDITION — ANYTHING GOES.</div>
   </div>
 
