@@ -13,8 +13,8 @@ DEEPSEEK_MODEL = "deepseek-chat"
 MAX_ACTION = 150
 MAX_NAME = 30
 
-KV_URL = os.environ.get("KV_REST_API_URL", "")
-KV_TOKEN = os.environ.get("KV_REST_API_TOKEN", "")
+KV_URL = os.environ.get("KV_REST_API_URL", "") or os.environ.get("UPSTASH_REDIS_REST_URL", "")
+KV_TOKEN = os.environ.get("KV_REST_API_TOKEN", "") or os.environ.get("UPSTASH_REDIS_REST_TOKEN", "")
 
 REFEREE_PROMPT = r"""You are the referee, narrator, and artist for NO RULEZ, a turn-based two-player battle game where ANYTHING GOES. Players describe actions in plain English — there are no rules, no move lists, no restrictions. Your job is to resolve every action fairly, dramatically, and entertainingly.
 
