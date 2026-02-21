@@ -289,7 +289,7 @@
 
   .input-area { margin: 6px 0; display: none; }
   .turn-label { font-weight: bold; margin-bottom: 3px; font-size: 13px; }
-  .action-input-row { display: flex; gap: 8px; }
+  .action-input-row { display: flex; gap: 8px; align-items: flex-end; }
   #action-input {
     flex: 1;
     background: #111;
@@ -298,6 +298,11 @@
     padding: 10px;
     font-family: inherit;
     font-size: 16px;
+    resize: none;
+    overflow: hidden;
+    min-height: 42px;
+    max-height: 120px;
+    line-height: 1.4;
   }
   #action-input:focus { outline: none; border-color: #f1fa8c; }
   .submit-btn, .retry-btn {
@@ -469,7 +474,7 @@
     <div id="input-area" class="input-area">
       <div id="turn-label" class="turn-label"></div>
       <div class="action-input-row">
-        <input type="text" id="action-input" placeholder="Describe your action..." maxlength="200">
+        <textarea id="action-input" placeholder="Describe your action..." maxlength="200" rows="1"></textarea>
         <button id="submit-btn" class="submit-btn" onclick="submitAction()">GO</button>
       </div>
       <div id="char-count" class="char-count">0 / 200</div>
@@ -1142,13 +1147,23 @@
   }
 
   $("action-input").addEventListener("keydown", function(e) {
-    if (e.key === "Enter" && !$("submit-btn").disabled) window.submitAction();
+    if (e.key === "Enter" && !e.shiftKey && !$("submit-btn").disabled) {
+      e.preventDefault();
+      window.submitAction();
+    }
   });
   $("action-input").addEventListener("input", function() {
+    // Auto-grow textarea
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 120) + "px";
     const len = this.value.length;
     const counter = $("char-count");
     counter.textContent = len + " / 200";
     counter.className = len >= 180 ? "char-count warn" : "char-count";
+  });
+  // Prevent mobile scroll-jump on focus
+  $("action-input").addEventListener("focus", function() {
+    setTimeout(function() { window.scrollTo(0, 0); }, 300);
   });
 
   async function doAiTurn() {
