@@ -23,7 +23,6 @@
     text-align: left;
   }
 
-  /* CSS Logo */
   .logo {
     text-align: center;
     margin-bottom: 20px;
@@ -52,7 +51,6 @@
     99% { opacity: 1; }
   }
 
-  /* Mode select */
   .setup { text-align: center; margin: 30px 0; }
   .setup h2 { color: #f1fa8c; margin-bottom: 15px; }
   .mode-btn {
@@ -70,7 +68,7 @@
     transition: background 0.2s, border-color 0.2s;
   }
   .mode-btn:hover { background: #2a2a4e; border-color: #f1fa8c; }
-  .name-input {
+  .name-input, .code-input {
     background: #111;
     color: #e0e0e0;
     border: 1px solid #555;
@@ -80,7 +78,14 @@
     width: 200px;
     margin: 5px;
   }
-  .name-input:focus { outline: none; border-color: #f1fa8c; }
+  .name-input:focus, .code-input:focus { outline: none; border-color: #f1fa8c; }
+  .code-input {
+    width: 120px;
+    text-align: center;
+    font-size: 24px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
   .start-btn {
     padding: 12px 30px;
     background: #2a2a4e;
@@ -92,8 +97,96 @@
     margin-top: 10px;
   }
   .start-btn:hover { background: #3a3a5e; }
+  .start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* Actions display */
+  /* Online lobby */
+  .game-code-display {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+    font-weight: 900;
+    color: #50fa7b;
+    letter-spacing: 0.3em;
+    text-shadow: 0 0 10px #50fa7b, 0 0 20px #50fa7b;
+    margin: 20px 0 10px;
+  }
+  .waiting-msg {
+    color: #f1fa8c;
+    font-size: 14px;
+    margin: 10px 0;
+  }
+  @keyframes pulse-dots {
+    0%, 80%, 100% { opacity: 0; }
+    40% { opacity: 1; }
+  }
+  .dot-pulse span {
+    animation: pulse-dots 1.4s infinite;
+    font-size: 20px;
+  }
+  .dot-pulse span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-pulse span:nth-child(3) { animation-delay: 0.4s; }
+  .online-sub-btn {
+    display: inline-block;
+    width: 180px;
+    margin: 8px;
+    padding: 14px 20px;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .online-sub-btn:hover { background: #2a2a4e; border-color: #50fa7b; }
+  .error-msg {
+    color: #ff5555;
+    font-size: 13px;
+    margin: 8px 0;
+    min-height: 18px;
+  }
+  .back-btn {
+    color: #666;
+    background: none;
+    border: 1px solid #444;
+    padding: 8px 16px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  .back-btn:hover { border-color: #888; color: #aaa; }
+
+  /* Game code badge */
+  .code-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #1a1a2e;
+    border: 1px solid #444;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: #50fa7b;
+    letter-spacing: 0.1em;
+  }
+  .turn-badge {
+    color: #f1fa8c;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  /* Waiting overlay for online */
+  .waiting-turn {
+    text-align: center;
+    padding: 20px;
+    color: #f1fa8c;
+    font-size: 15px;
+  }
+  @keyframes pulse-bg {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+  .waiting-turn .pulse { animation: pulse-bg 2s infinite; }
+
   .actions-display {
     display: none;
     border: 1px solid #444;
@@ -110,10 +203,8 @@
   .action-text { color: #f8f8f2; }
   .dim { color: #666; }
 
-  /* Separator */
   .sep { color: #f1fa8c; font-weight: bold; overflow: hidden; }
 
-  /* Narrative */
   #narrative {
     margin: 10px 0;
     font-size: 14px;
@@ -124,7 +215,6 @@
     cursor: pointer;
   }
 
-  /* Scene */
   .scene-container {
     position: relative;
     overflow-x: auto;
@@ -147,7 +237,6 @@
     margin-top: 4px;
   }
 
-  /* HP Bars */
   .hp-section { margin: 15px 0; }
   .hp-row {
     display: flex;
@@ -182,7 +271,6 @@
     min-width: 50px;
   }
 
-  /* Input area */
   .input-area { margin: 15px 0; display: none; }
   .turn-label { font-weight: bold; margin-bottom: 5px; font-size: 14px; }
   .action-input-row { display: flex; gap: 8px; }
@@ -212,7 +300,6 @@
     cursor: not-allowed;
   }
 
-  /* Status */
   #status {
     color: #666;
     font-size: 13px;
@@ -220,7 +307,6 @@
     min-height: 18px;
   }
 
-  /* Game over */
   .game-over {
     display: none;
     text-align: center;
@@ -241,8 +327,18 @@
     font-size: 1.1rem;
     font-weight: bold;
   }
+  .play-again-btn {
+    margin-top: 15px;
+    padding: 12px 30px;
+    background: #2a2a4e;
+    color: #f1fa8c;
+    border: 1px solid #f1fa8c;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .play-again-btn:hover { background: #3a3a5e; }
 
-  /* Character counter */
   .char-count {
     color: #666;
     font-size: 11px;
@@ -253,15 +349,10 @@
 
   .hidden { display: none !important; }
 
-  /* Mobile */
   @media (max-width: 600px) {
     body { padding: 10px; font-size: 15px; }
     .logo { margin-bottom: 15px; }
-
-    /* Scene scroll hint */
     .scroll-hint { display: block; }
-
-    /* HP: stack name above bar */
     .hp-row {
       flex-wrap: wrap;
       margin: 10px 0;
@@ -275,8 +366,6 @@
     }
     .hp-bar-bg { max-width: none; height: 16px; }
     .hp-value { font-size: 12px; min-width: 50px; }
-
-    /* Input: stack vertically */
     .action-input-row {
       flex-direction: column;
     }
@@ -286,16 +375,13 @@
       padding: 12px;
       font-size: 15px;
     }
-
-    /* Mode buttons: bigger touch targets */
     .mode-btn { padding: 16px 20px; font-size: 15px; }
+    .online-sub-btn { display: block; width: 100%; max-width: 400px; margin: 8px auto; }
     .name-input { width: 100%; margin: 5px 0; }
+    .code-input { width: 160px; }
     .start-btn { width: 100%; padding: 14px; font-size: 15px; }
-
-    /* Narrative */
     #narrative { font-size: 14px; line-height: 1.7; }
     .actions-display .action-line { font-size: 12px; }
-
     .sep { font-size: 10px; }
   }
 </style>
@@ -303,7 +389,6 @@
 <body>
 <div id="game-container">
 
-  <!-- Logo -->
   <div class="logo">
     <div class="logo-title">NO<br>RULEZ</div>
     <div class="logo-subtitle">WEB EDITION — ANYTHING GOES.</div>
@@ -312,19 +397,22 @@
   <!-- Setup -->
   <div id="setup" class="setup">
     <h2>SELECT MODE</h2>
-    <button class="mode-btn" onclick="selectMode('pvp')">[1] Player vs Player</button>
-    <button class="mode-btn" onclick="selectMode('vs_ai')">[2] Player vs DeepSeek</button>
+    <button class="mode-btn" onclick="selectMode('pvp')">⚔️ LOCAL MULTIPLAYER</button>
+    <button class="mode-btn" onclick="selectMode('online')">🌐 ONLINE MULTIPLAYER</button>
+    <button class="mode-btn" onclick="selectMode('vs_ai')">🤖 VS DEEP$EEK AI</button>
     <div id="name-inputs" class="hidden" style="margin-top:20px;"></div>
   </div>
 
-  <!-- Game area (hidden until start) -->
-  <div id="game-area" class="hidden">
-    <!-- Actions display -->
+  <!-- Game area -->
+  <div id="game-area" class="hidden" style="position:relative;">
+    <div id="code-badge" class="code-badge hidden"></div>
+
     <div id="actions-display" class="actions-display">
       <div id="p1-action" class="action-line"></div>
       <div id="p2-action" class="action-line"></div>
     </div>
 
+    <div id="turn-badge" class="turn-badge hidden"></div>
     <div class="sep" id="sep-top"></div>
     <div id="narrative"></div>
     <div class="sep" id="sep-mid"></div>
@@ -351,6 +439,12 @@
 
     <div id="status"></div>
 
+    <!-- Waiting for opponent turn (online) -->
+    <div id="waiting-turn" class="waiting-turn hidden">
+      <div class="pulse">Waiting for <span id="waiting-name"></span>...</div>
+      <div class="dot-pulse" style="margin-top:8px;"><span>.</span><span>.</span><span>.</span></div>
+    </div>
+
     <!-- Input area -->
     <div id="input-area" class="input-area">
       <div id="turn-label" class="turn-label"></div>
@@ -361,13 +455,12 @@
       <div id="char-count" class="char-count">0 / 150</div>
     </div>
 
-    <!-- Retry button -->
     <button id="retry-btn" class="retry-btn hidden" onclick="retryTurn()">Retry</button>
 
-    <!-- Game over -->
     <div id="game-over" class="game-over">
       <div class="game-over-title">GAME OVER</div>
       <div id="game-over-winner" class="game-over-winner"></div>
+      <button class="play-again-btn" onclick="backToMenu()">PLAY AGAIN</button>
     </div>
   </div>
 
@@ -385,15 +478,40 @@
   let typewriterAbort = null;
   let pendingRetry = null;
 
+  // Online state
+  let onlineCode = null;
+  let onlinePlayerNum = null;
+  let pollTimer = null;
+  let lastUpdated = 0;
+
   const $ = id => document.getElementById(id);
+
+  function backToMenu() {
+    stopPolling();
+    onlineCode = null;
+    onlinePlayerNum = null;
+    mode = null;
+    state = null;
+    turn = 1;
+    p1Action = "";
+    p2Action = "";
+    $("game-area").classList.add("hidden");
+    $("game-over").style.display = "none";
+    $("setup").classList.remove("hidden");
+    $("name-inputs").classList.add("hidden");
+    $("name-inputs").innerHTML = "";
+  }
+  window.backToMenu = backToMenu;
 
   window.selectMode = function(m) {
     mode = m;
     const box = $("name-inputs");
     box.classList.remove("hidden");
+    box.innerHTML = "";
 
-    if (m === "vs_ai") {
-      box.innerHTML = "";
+    if (m === "online") {
+      renderOnlineLobby(box);
+    } else if (m === "vs_ai") {
       const label = document.createElement("div");
       label.textContent = "Your name:";
       label.style.color = "#ff5555";
@@ -409,11 +527,10 @@
       const btn = document.createElement("button");
       btn.className = "start-btn";
       btn.textContent = "START";
-      btn.onclick = () => startGame(inp.value.trim() || "Player 1", "DeepSeek");
+      btn.onclick = () => startLocalGame(inp.value.trim() || "Player 1", "DeepSeek");
       box.appendChild(btn);
       inp.addEventListener("keydown", e => { if (e.key === "Enter") btn.click(); });
     } else {
-      box.innerHTML = "";
       const l1 = document.createElement("div");
       l1.textContent = "Player 1:";
       l1.style.color = "#ff5555";
@@ -440,13 +557,349 @@
       const btn = document.createElement("button");
       btn.className = "start-btn";
       btn.textContent = "START";
-      btn.onclick = () => startGame(i1.value.trim() || "Player 1", i2.value.trim() || "Player 2");
+      btn.onclick = () => startLocalGame(i1.value.trim() || "Player 1", i2.value.trim() || "Player 2");
       box.appendChild(btn);
       i2.addEventListener("keydown", e => { if (e.key === "Enter") btn.click(); });
     }
   };
 
-  function startGame(p1, p2) {
+  // --- Online Lobby ---
+  function renderOnlineLobby(box) {
+    const title = document.createElement("div");
+    title.style.color = "#50fa7b";
+    title.style.fontWeight = "bold";
+    title.style.marginBottom = "15px";
+    title.textContent = "ONLINE MULTIPLAYER";
+    box.appendChild(title);
+
+    const btnCreate = document.createElement("button");
+    btnCreate.className = "online-sub-btn";
+    btnCreate.textContent = "CREATE GAME";
+    btnCreate.onclick = () => showCreateForm(box);
+    box.appendChild(btnCreate);
+
+    const btnJoin = document.createElement("button");
+    btnJoin.className = "online-sub-btn";
+    btnJoin.textContent = "JOIN GAME";
+    btnJoin.onclick = () => showJoinForm(box);
+    box.appendChild(btnJoin);
+
+    const back = document.createElement("button");
+    back.className = "back-btn";
+    back.textContent = "← Back";
+    back.onclick = () => { box.classList.add("hidden"); box.innerHTML = ""; };
+    box.appendChild(document.createElement("br"));
+    box.appendChild(back);
+  }
+
+  function showCreateForm(box) {
+    box.innerHTML = "";
+    const label = document.createElement("div");
+    label.textContent = "Your name:";
+    label.style.color = "#ff5555";
+    label.style.fontWeight = "bold";
+    box.appendChild(label);
+    const inp = document.createElement("input");
+    inp.className = "name-input";
+    inp.maxLength = 30;
+    inp.placeholder = "Enter your name";
+    box.appendChild(inp);
+    box.appendChild(document.createElement("br"));
+    const err = document.createElement("div");
+    err.className = "error-msg";
+    box.appendChild(err);
+    const btn = document.createElement("button");
+    btn.className = "start-btn";
+    btn.textContent = "CREATE GAME";
+    btn.onclick = () => doCreate(inp.value.trim(), btn, err, box);
+    box.appendChild(btn);
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") btn.click(); });
+    const back = document.createElement("button");
+    back.className = "back-btn";
+    back.textContent = "← Back";
+    back.onclick = () => renderOnlineLobby((box.innerHTML = "", box));
+    box.appendChild(document.createElement("br"));
+    box.appendChild(back);
+    inp.focus();
+  }
+
+  async function doCreate(name, btn, errEl, box) {
+    if (!name) name = "Player 1";
+    btn.disabled = true;
+    btn.textContent = "Creating...";
+    errEl.textContent = "";
+    try {
+      const resp = await fetch("/api/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ player_name: name }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) { errEl.textContent = data.error || "Failed"; btn.disabled = false; btn.textContent = "CREATE GAME"; return; }
+      onlineCode = data.code;
+      onlinePlayerNum = 1;
+      lastUpdated = data.game.last_updated || 0;
+      showWaitingForOpponent(box, data.code);
+    } catch (e) {
+      errEl.textContent = "Network error. Try again.";
+      btn.disabled = false;
+      btn.textContent = "CREATE GAME";
+    }
+  }
+
+  function showWaitingForOpponent(box, code) {
+    box.innerHTML = "";
+    const t = document.createElement("div");
+    t.style.color = "#f1fa8c";
+    t.style.marginBottom = "5px";
+    t.textContent = "Share this code with your opponent:";
+    box.appendChild(t);
+    const codeEl = document.createElement("div");
+    codeEl.className = "game-code-display";
+    codeEl.textContent = code;
+    box.appendChild(codeEl);
+    const w = document.createElement("div");
+    w.className = "waiting-msg";
+    w.innerHTML = 'Waiting for opponent to join <span class="dot-pulse"><span>.</span><span>.</span><span>.</span></span>';
+    box.appendChild(w);
+    const back = document.createElement("button");
+    back.className = "back-btn";
+    back.textContent = "Cancel";
+    back.onclick = () => { stopPolling(); backToMenu(); };
+    box.appendChild(back);
+
+    // Start polling for p2 join
+    startPolling(function(game) {
+      if (game.p2_name) {
+        stopPolling();
+        startOnlineGame(game);
+      }
+    });
+  }
+
+  function showJoinForm(box) {
+    box.innerHTML = "";
+    const label = document.createElement("div");
+    label.textContent = "Your name:";
+    label.style.color = "#6272a4";
+    label.style.fontWeight = "bold";
+    box.appendChild(label);
+    const nameInp = document.createElement("input");
+    nameInp.className = "name-input";
+    nameInp.maxLength = 30;
+    nameInp.placeholder = "Enter your name";
+    box.appendChild(nameInp);
+    box.appendChild(document.createElement("br"));
+    const label2 = document.createElement("div");
+    label2.textContent = "Game code:";
+    label2.style.color = "#50fa7b";
+    label2.style.fontWeight = "bold";
+    label2.style.marginTop = "10px";
+    box.appendChild(label2);
+    const codeInp = document.createElement("input");
+    codeInp.className = "code-input";
+    codeInp.maxLength = 4;
+    codeInp.placeholder = "ABCD";
+    box.appendChild(codeInp);
+    box.appendChild(document.createElement("br"));
+    const err = document.createElement("div");
+    err.className = "error-msg";
+    box.appendChild(err);
+    const btn = document.createElement("button");
+    btn.className = "start-btn";
+    btn.textContent = "JOIN GAME";
+    btn.onclick = () => doJoin(nameInp.value.trim(), codeInp.value.trim(), btn, err);
+    box.appendChild(btn);
+    codeInp.addEventListener("keydown", e => { if (e.key === "Enter") btn.click(); });
+    const back = document.createElement("button");
+    back.className = "back-btn";
+    back.textContent = "← Back";
+    back.onclick = () => renderOnlineLobby((box.innerHTML = "", box));
+    box.appendChild(document.createElement("br"));
+    box.appendChild(back);
+    nameInp.focus();
+  }
+
+  async function doJoin(name, code, btn, errEl) {
+    if (!name) name = "Player 2";
+    if (!code || code.length !== 4) { errEl.textContent = "Enter a 4-character code."; return; }
+    btn.disabled = true;
+    btn.textContent = "Joining...";
+    errEl.textContent = "";
+    try {
+      const resp = await fetch("/api/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code, player_name: name }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) { errEl.textContent = data.error || "Failed"; btn.disabled = false; btn.textContent = "JOIN GAME"; return; }
+      onlineCode = data.game.code;
+      onlinePlayerNum = 2;
+      lastUpdated = data.game.last_updated || 0;
+      startOnlineGame(data.game);
+    } catch (e) {
+      errEl.textContent = "Network error. Try again.";
+      btn.disabled = false;
+      btn.textContent = "JOIN GAME";
+    }
+  }
+
+  // --- Online Game ---
+  function startOnlineGame(game) {
+    state = {
+      p1_name: game.p1_name,
+      p2_name: game.p2_name,
+      p1_hp: game.p1_hp,
+      p2_hp: game.p2_hp,
+      situation: game.situation,
+      last_action: game.last_action,
+    };
+    turn = game.turn;
+
+    $("setup").classList.add("hidden");
+    $("game-area").classList.remove("hidden");
+    $("actions-display").style.display = "none";
+
+    $("code-badge").textContent = "GAME: " + onlineCode;
+    $("code-badge").classList.remove("hidden");
+
+    $("p1-name").textContent = game.p1_name;
+    $("p2-name").textContent = game.p2_name;
+    updateHP();
+
+    const sep = "━".repeat(70);
+    $("sep-top").textContent = sep;
+    $("sep-mid").textContent = sep;
+    $("sep-bot").textContent = sep;
+
+    if (game.narrative) {
+      $("narrative").textContent = game.narrative;
+      $("scene").textContent = game.scene || "";
+    } else {
+      $("narrative").textContent = "The arena is set. " + game.p1_name + " and " + game.p2_name + " face each other. THERE ARE NO RULES.";
+      $("scene").textContent =
+        "        " + game.p1_name + "                          " + game.p2_name + "\n" +
+        "          O                                  O\n" +
+        "         /|\\        THE ARENA AWAITS        /|\\\n" +
+        "         / \\                               / \\\n" +
+        "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+    }
+
+    onlinePromptTurn(game);
+  }
+
+  function onlinePromptTurn(game) {
+    $("retry-btn").classList.add("hidden");
+    $("game-over").style.display = "none";
+    $("waiting-turn").classList.add("hidden");
+    $("input-area").style.display = "none";
+    $("turn-badge").classList.remove("hidden");
+    $("turn-badge").textContent = "TURN " + game.turn;
+
+    if (game.status === "finished") {
+      showGameOver();
+      return;
+    }
+
+    const isMyTurn = game.current_player === onlinePlayerNum;
+    const myName = onlinePlayerNum === 1 ? game.p1_name : game.p2_name;
+    const oppName = onlinePlayerNum === 1 ? game.p2_name : game.p1_name;
+
+    if (isMyTurn) {
+      stopPolling();
+      $("input-area").style.display = "block";
+      const label = $("turn-label");
+      label.textContent = "Your turn, " + myName + "!";
+      label.className = "turn-label " + (onlinePlayerNum === 1 ? "p1-color" : "p2-color");
+      $("action-input").value = "";
+      $("action-input").disabled = false;
+      $("action-input").style.opacity = "1";
+      $("action-input").focus();
+      $("submit-btn").disabled = false;
+      $("status").textContent = "";
+    } else {
+      $("waiting-turn").classList.remove("hidden");
+      $("waiting-name").textContent = oppName;
+      $("status").textContent = "";
+      startPolling(function(g) {
+        if (g.last_updated > lastUpdated) {
+          lastUpdated = g.last_updated;
+          state.p1_hp = g.p1_hp;
+          state.p2_hp = g.p2_hp;
+          state.situation = g.situation;
+          state.last_action = g.last_action;
+          turn = g.turn;
+          updateHP();
+
+          // Show last action
+          if (g.last_actor && g.last_actor_action) {
+            const actorName = g.last_actor === 1 ? g.p1_name : g.p2_name;
+            const cls = g.last_actor === 1 ? "p1-color" : "p2-color";
+            $("actions-display").style.display = "block";
+            $("p1-action").innerHTML = "";
+            $("p2-action").innerHTML = "";
+            const targetLine = g.last_actor === 1 ? $("p1-action") : $("p2-action");
+            const lbl = document.createElement("span");
+            lbl.className = cls;
+            lbl.textContent = actorName + " said: ";
+            const txt = document.createElement("span");
+            txt.className = "action-text";
+            txt.textContent = g.last_actor_action;
+            targetLine.appendChild(lbl);
+            targetLine.appendChild(txt);
+          }
+
+          stopPolling();
+          $("waiting-turn").classList.add("hidden");
+
+          (async function() {
+            if (g.narrative) await typewrite($("narrative"), g.narrative);
+            if (g.scene) $("scene").textContent = g.scene;
+            onlinePromptTurn(g);
+          })();
+        }
+      });
+    }
+  }
+
+  // --- Polling ---
+  function startPolling(callback) {
+    stopPolling();
+    function doPoll() {
+      if (document.hidden) return; // skip when tab hidden
+      if (!onlineCode) return;
+      fetch("/api/poll?code=" + encodeURIComponent(onlineCode) + "&since=" + lastUpdated)
+        .then(r => r.json())
+        .then(data => {
+          if (data.changed && data.game) {
+            lastUpdated = data.game.last_updated || lastUpdated;
+            callback(data.game);
+          }
+        })
+        .catch(() => {}); // silent fail, will retry
+    }
+    doPoll();
+    pollTimer = setInterval(doPoll, 3000);
+    // Resume polling when tab becomes visible
+    document.addEventListener("visibilitychange", onVisChange);
+  }
+
+  function onVisChange() {
+    if (!document.hidden && pollTimer && onlineCode) {
+      // Immediate poll on tab re-focus
+      fetch("/api/poll?code=" + encodeURIComponent(onlineCode) + "&since=" + lastUpdated)
+        .then(r => r.json()).then(() => {}).catch(() => {});
+    }
+  }
+
+  function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    document.removeEventListener("visibilitychange", onVisChange);
+  }
+
+  // --- Local game (PvP + vs AI) ---
+  function startLocalGame(p1, p2) {
     state = {
       p1_name: p1,
       p2_name: p2,
@@ -462,6 +915,9 @@
     $("setup").classList.add("hidden");
     $("game-area").classList.remove("hidden");
     $("actions-display").style.display = "none";
+    $("code-badge").classList.add("hidden");
+    $("turn-badge").classList.add("hidden");
+    $("waiting-turn").classList.add("hidden");
 
     $("p1-name").textContent = p1;
     $("p2-name").textContent = p2;
@@ -496,16 +952,10 @@
     const disp = $("actions-display");
     const a1 = $("p1-action");
     const a2 = $("p2-action");
-
-    if (!p1Action && !p2Action) {
-      disp.style.display = "none";
-      return;
-    }
+    if (!p1Action && !p2Action) { disp.style.display = "none"; return; }
     disp.style.display = "block";
-
     a1.innerHTML = "";
     a2.innerHTML = "";
-
     if (p1Action) {
       const lbl = document.createElement("span");
       lbl.className = "p1-color";
@@ -521,7 +971,6 @@
       s.textContent = state.p1_name + ": waiting...";
       a1.appendChild(s);
     }
-
     if (p2Action) {
       const lbl = document.createElement("span");
       lbl.className = "p2-color";
@@ -544,25 +993,14 @@
       el.textContent = "";
       let i = 0;
       let skipped = false;
-
       function skip() {
-        if (!skipped) {
-          skipped = true;
-          el.textContent = text;
-          resolve();
-        }
+        if (!skipped) { skipped = true; el.textContent = text; resolve(); }
       }
-
       typewriterAbort = skip;
       el.addEventListener("click", skip, { once: true });
-
       function tick() {
         if (skipped) return;
-        if (i >= text.length) {
-          typewriterAbort = null;
-          resolve();
-          return;
-        }
+        if (i >= text.length) { typewriterAbort = null; resolve(); return; }
         const ch = text[i];
         el.textContent += ch;
         i++;
@@ -575,22 +1013,14 @@
     });
   }
 
-  function currentPlayer() {
-    return turn % 2 === 1 ? 1 : 2;
-  }
-
-  function isAiTurn() {
-    return mode === "vs_ai" && currentPlayer() === 2;
-  }
+  function currentPlayer() { return turn % 2 === 1 ? 1 : 2; }
+  function isAiTurn() { return mode === "vs_ai" && currentPlayer() === 2; }
 
   function promptTurn() {
     $("retry-btn").classList.add("hidden");
     $("game-over").style.display = "none";
 
-    if (state.p1_hp <= 0 || state.p2_hp <= 0) {
-      showGameOver();
-      return;
-    }
+    if (state.p1_hp <= 0 || state.p2_hp <= 0) { showGameOver(); return; }
 
     const pn = currentPlayer();
     const name = pn === 1 ? state.p1_name : state.p2_name;
@@ -599,9 +1029,7 @@
     if (isAiTurn()) {
       $("input-area").style.display = "none";
       $("status").textContent = "DeepSeek is preparing...";
-      setTimeout(() => {
-        doAiTurn();
-      }, 3000);
+      setTimeout(() => doAiTurn(), 3000);
     } else {
       $("input-area").style.display = "block";
       const label = $("turn-label");
@@ -624,20 +1052,73 @@
     input.disabled = true;
     input.style.opacity = "0.4";
 
-    const pn = currentPlayer();
-    if (pn === 1) p1Action = action;
-    else p2Action = action;
-    updateActionsDisplay();
-
-    resolveAction(pn === 1 ? state.p1_name : state.p2_name, pn, action);
+    if (mode === "online") {
+      submitOnlineAction(action);
+    } else {
+      const pn = currentPlayer();
+      if (pn === 1) p1Action = action; else p2Action = action;
+      updateActionsDisplay();
+      resolveAction(pn === 1 ? state.p1_name : state.p2_name, pn, action);
+    }
   };
 
-  $("action-input").addEventListener("keydown", function(e) {
-    if (e.key === "Enter" && !$("submit-btn").disabled) {
-      window.submitAction();
-    }
-  });
+  async function submitOnlineAction(action) {
+    $("status").textContent = "The referee deliberates...";
+    try {
+      const resp = await fetch("/api/turn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: onlineCode, player_num: onlinePlayerNum, action: action }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        $("status").textContent = data.error || "Error";
+        pendingRetry = { type: "online", action };
+        $("retry-btn").classList.remove("hidden");
+        $("input-area").style.display = "none";
+        return;
+      }
+      const g = data.game;
+      lastUpdated = g.last_updated;
+      state.p1_hp = g.p1_hp;
+      state.p2_hp = g.p2_hp;
+      state.situation = g.situation;
+      state.last_action = g.last_action;
+      turn = g.turn;
 
+      $("input-area").style.display = "none";
+      $("status").textContent = "";
+
+      // Show own action
+      $("actions-display").style.display = "block";
+      $("p1-action").innerHTML = "";
+      $("p2-action").innerHTML = "";
+      const targetLine = onlinePlayerNum === 1 ? $("p1-action") : $("p2-action");
+      const lbl = document.createElement("span");
+      lbl.className = onlinePlayerNum === 1 ? "p1-color" : "p2-color";
+      lbl.textContent = (onlinePlayerNum === 1 ? g.p1_name : g.p2_name) + " said: ";
+      const txt = document.createElement("span");
+      txt.className = "action-text";
+      txt.textContent = action;
+      targetLine.appendChild(lbl);
+      targetLine.appendChild(txt);
+
+      if (g.narrative) await typewrite($("narrative"), g.narrative);
+      if (g.scene) $("scene").textContent = g.scene;
+      updateHP();
+
+      onlinePromptTurn(g);
+    } catch (e) {
+      $("status").textContent = "Network error. Try again.";
+      pendingRetry = { type: "online", action };
+      $("retry-btn").classList.remove("hidden");
+      $("input-area").style.display = "none";
+    }
+  }
+
+  $("action-input").addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !$("submit-btn").disabled) window.submitAction();
+  });
   $("action-input").addEventListener("input", function() {
     const len = this.value.length;
     const counter = $("char-count");
@@ -649,16 +1130,11 @@
     const pn = currentPlayer();
     const name = pn === 1 ? state.p1_name : state.p2_name;
     $("status").textContent = name + " is thinking...";
-
     try {
       const resp = await fetch("/api/opponent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          state: state,
-          ai_name: name,
-          player_num: pn,
-        }),
+        body: JSON.stringify({ state: state, ai_name: name, player_num: pn }),
       });
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: "Request failed" }));
@@ -669,11 +1145,8 @@
       }
       const data = await resp.json();
       const action = data.action;
-
-      if (pn === 1) p1Action = action;
-      else p2Action = action;
+      if (pn === 1) p1Action = action; else p2Action = action;
       updateActionsDisplay();
-
       $("status").textContent = name + ": " + action;
       resolveAction(name, pn, action);
     } catch (e) {
@@ -685,50 +1158,33 @@
 
   async function resolveAction(playerName, playerNum, action) {
     $("status").textContent = "The referee deliberates...";
-
     try {
       const resp = await fetch("/api/referee", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          state: state,
-          player_name: playerName,
-          player_num: playerNum,
-          action: action,
-        }),
+        body: JSON.stringify({ state: state, player_name: playerName, player_num: playerNum, action: action }),
       });
-
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: "Request failed" }));
         const msg = err.error || "Unknown error";
-        if (msg.includes("fumbled")) {
-          $("status").textContent = "Referee fumbled! Try again.";
-        } else {
-          $("status").textContent = "Error: " + msg;
-        }
+        $("status").textContent = msg.includes("fumbled") ? "Referee fumbled! Try again." : "Error: " + msg;
         pendingRetry = { type: "resolve", playerName, playerNum, action };
         $("retry-btn").classList.remove("hidden");
         $("input-area").style.display = "none";
         return;
       }
-
       const data = await resp.json();
-
       state.p1_hp = data.state.p1_hp;
       state.p2_hp = data.state.p2_hp;
       state.situation = data.state.situation;
       state.last_action = data.state.last_action;
-
       $("input-area").style.display = "none";
       $("status").textContent = "";
-
       await typewrite($("narrative"), data.narrative);
       $("scene").textContent = data.scene;
       updateHP();
-
       turn++;
       promptTurn();
-
     } catch (e) {
       $("status").textContent = "Network error. Check your connection.";
       pendingRetry = { type: "resolve", playerName, playerNum, action };
@@ -739,23 +1195,30 @@
 
   window.retryTurn = function() {
     $("retry-btn").classList.add("hidden");
-    if (!pendingRetry) { promptTurn(); return; }
-
+    if (!pendingRetry) { if (mode === "online") return; promptTurn(); return; }
     if (pendingRetry.type === "ai") {
       doAiTurn();
     } else if (pendingRetry.type === "resolve") {
       resolveAction(pendingRetry.playerName, pendingRetry.playerNum, pendingRetry.action);
+    } else if (pendingRetry.type === "online") {
+      // Re-show input with the action pre-filled
+      $("input-area").style.display = "block";
+      $("action-input").value = pendingRetry.action;
+      $("action-input").disabled = false;
+      $("action-input").style.opacity = "1";
+      $("submit-btn").disabled = false;
+      $("status").textContent = "";
     }
     pendingRetry = null;
   };
 
   function showGameOver() {
     $("input-area").style.display = "none";
+    $("waiting-turn").classList.add("hidden");
     $("status").textContent = "";
-
+    stopPolling();
     const winner = state.p1_hp <= 0 ? state.p2_name : state.p1_name;
-    const el = $("game-over");
-    el.style.display = "block";
+    $("game-over").style.display = "block";
     $("game-over-winner").textContent = winner + " WINS THE MATCH!";
   }
 
