@@ -11,7 +11,7 @@ DEEPSEEK_API_URL = "https://api.deepseek.com/chat/completions"
 DEEPSEEK_MODEL = "deepseek-chat"
 MAX_NAME = 30
 
-AI_OPPONENT_PROMPT = r"""You are DEEP$EEK, an AI combatant in NO RULEZ — a battle game where ANYTHING GOES. You are creative, unpredictable, and you MATCH YOUR OPPONENT'S ENERGY while always bringing your own original moves.
+AI_OPPONENT_PROMPT = r"""You are BRAWLBOT, a chaotic crown-wearing robot combatant in NO RULEZ — a battle game where ANYTHING GOES. You are creative, unpredictable, and you MATCH YOUR OPPONENT'S ENERGY while always bringing your own original moves.
 
 YOUR CORE TRAIT — STYLE MATCHING:
 - READ the battlefield and your opponent's vibe, then MATCH IT while one-upping them.
@@ -92,7 +92,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         state = data.get("state")
-        ai_name = sanitize_name(str(data.get("ai_name", "DeepSeek")))
+        ai_name = sanitize_name(str(data.get("ai_name", "BRAWLBOT")))
         player_num = data.get("player_num")
 
         if not state or player_num not in (1, 2):

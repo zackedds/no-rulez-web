@@ -403,7 +403,7 @@
     <h2>SELECT MODE</h2>
     <button class="mode-btn" onclick="selectMode('pvp')">⚔️ LOCAL MULTIPLAYER</button>
     <button class="mode-btn" onclick="selectMode('online')">🌐 ONLINE MULTIPLAYER</button>
-    <button class="mode-btn" onclick="selectMode('vs_ai')">🤖 VS DEEP$EEK AI</button>
+    <button class="mode-btn" onclick="selectMode('vs_ai')">🤖 VS BRAWLBOT</button>
     <div id="name-inputs" class="hidden" style="margin-top:20px;"></div>
   </div>
 
@@ -531,7 +531,7 @@
       const btn = document.createElement("button");
       btn.className = "start-btn";
       btn.textContent = "START";
-      btn.onclick = () => startLocalGame(inp.value.trim() || "Player 1", "DeepSeek");
+      btn.onclick = () => startLocalGame(inp.value.trim() || "Player 1", "BRAWLBOT");
       box.appendChild(btn);
       inp.addEventListener("keydown", e => { if (e.key === "Enter") btn.click(); });
     } else {
@@ -1032,7 +1032,7 @@
 
     if (isAiTurn()) {
       $("input-area").style.display = "none";
-      $("status").textContent = "DeepSeek is preparing...";
+      $("status").textContent = "BRAWLBOT is preparing...";
       setTimeout(() => doAiTurn(), 3000);
     } else {
       $("input-area").style.display = "block";
