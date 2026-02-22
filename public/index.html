@@ -344,6 +344,47 @@
     min-height: 16px;
   }
 
+  /* Loading overlay */
+  .loading-overlay {
+    display: none;
+    text-align: center;
+    padding: 30px 20px;
+    margin: 10px 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid #333;
+    border-radius: 8px;
+  }
+  .loading-overlay .loading-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    animation: loading-bounce 1.2s ease-in-out infinite;
+  }
+  .loading-overlay .loading-text {
+    color: #f1fa8c;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
+  .loading-overlay .loading-sub {
+    color: #666;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+  .loading-overlay .loading-dots {
+    display: inline-block;
+  }
+  .loading-overlay .loading-dots span {
+    animation: pulse-dots 1.4s infinite;
+    font-size: 18px;
+    color: #f1fa8c;
+  }
+  .loading-overlay .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-overlay .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes loading-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
   .game-over {
     display: none;
     text-align: center;
@@ -481,6 +522,14 @@
 
     <div id="status"></div>
 
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+      <div class="loading-icon">🥊</div>
+      <div class="loading-text" id="loading-text">THE REFEREE DELIBERATES</div>
+      <div class="loading-dots"><span>.</span><span>.</span><span>.</span></div>
+      <div class="loading-sub" id="loading-sub"></div>
+    </div>
+
     <!-- Waiting for opponent turn (online) -->
     <div id="waiting-turn" class="waiting-turn hidden">
       <div class="pulse">Waiting for <span id="waiting-name"></span>...</div>
@@ -527,6 +576,16 @@
   let lastUpdated = 0;
 
   const $ = id => document.getElementById(id);
+
+  function showLoading(text, sub) {
+    $("loading-overlay").style.display = "block";
+    $("loading-text").textContent = text || "THE REFEREE DELIBERATES";
+    $("loading-sub").textContent = sub || "";
+  }
+  function hideLoading() {
+    $("loading-overlay").style.display = "none";
+    $("status").textContent = "";
+  }
 
   function setGameMode(active) {
     document.querySelector(".logo").classList.toggle("in-game", active);
@@ -867,11 +926,11 @@
       $("action-input").style.opacity = "1";
       $("action-input").focus();
       $("submit-btn").disabled = false;
-      $("status").textContent = "";
+      hideLoading();
     } else {
       $("waiting-turn").classList.remove("hidden");
       $("waiting-name").textContent = oppName;
-      $("status").textContent = "";
+      hideLoading();
       startPolling(function(g) {
         lastUpdated = g.last_updated;
         state.p1_hp = g.p1_hp;
@@ -1083,7 +1142,7 @@
 
     if (isAiTurn()) {
       $("input-area").style.display = "none";
-      $("status").textContent = "BRAWLBOT is preparing...";
+      showLoading("BRAWLBOT IS CHARGING UP", "Preparing a devastating move...");
       setTimeout(() => doAiTurn(), 3000);
     } else {
       $("input-area").style.display = "block";
@@ -1095,7 +1154,7 @@
       $("action-input").style.opacity = "1";
       $("action-input").focus();
       $("submit-btn").disabled = false;
-      $("status").textContent = "";
+      hideLoading();
     }
   }
 
@@ -1118,7 +1177,7 @@
   };
 
   async function submitOnlineAction(action) {
-    $("status").textContent = "The referee deliberates...";
+    showLoading("THE REFEREE DELIBERATES", "Judging your move...");
     try {
       const resp = await fetch("/api/turn", {
         method: "POST",
@@ -1142,7 +1201,7 @@
       turn = g.turn;
 
       $("input-area").style.display = "none";
-      $("status").textContent = "";
+      hideLoading();
 
       // Show own action
       $("actions-display").style.display = "block";
@@ -1202,7 +1261,7 @@
   async function doAiTurn() {
     const pn = currentPlayer();
     const name = pn === 1 ? state.p1_name : state.p2_name;
-    $("status").textContent = name + " is thinking...";
+    showLoading(name.toUpperCase() + " IS THINKING", "Plotting something devious...");
     try {
       const resp = await fetch("/api/opponent", {
         method: "POST",
@@ -1253,7 +1312,7 @@
     var wrapper = $("scene-image-wrapper");
     var sceneContainer = document.querySelector(".scene-container");
     wrapper.style.display = "block";
-    wrapper.innerHTML = '<div class="img-loading">Generating image...</div>';
+    wrapper.innerHTML = '<div class="img-loading">Painting the battlefield...</div>';
     sceneContainer.style.display = "none";
     fetch("/api/image", {
       method: "POST",
@@ -1277,7 +1336,7 @@
   }
 
   async function resolveAction(playerName, playerNum, action) {
-    $("status").textContent = "The referee deliberates...";
+    showLoading("THE REFEREE DELIBERATES", "Judging your move...");
     try {
       const resp = await fetch("/api/referee", {
         method: "POST",
@@ -1299,7 +1358,7 @@
       state.situation = data.state.situation;
       state.last_action = data.state.last_action;
       $("input-area").style.display = "none";
-      $("status").textContent = "";
+      hideLoading();
 
       // Fire off image generation async (don't block game)
       if (data.state.image_safe && data.state.image_prompt) {
@@ -1335,7 +1394,7 @@
       $("action-input").disabled = false;
       $("action-input").style.opacity = "1";
       $("submit-btn").disabled = false;
-      $("status").textContent = "";
+      hideLoading();
     }
     pendingRetry = null;
   };
@@ -1343,7 +1402,7 @@
   function showGameOver() {
     $("input-area").style.display = "none";
     $("waiting-turn").classList.add("hidden");
-    $("status").textContent = "";
+    hideLoading();
     stopPolling();
     const winner = state.p1_hp <= 0 ? state.p2_name : state.p1_name;
     $("game-over").style.display = "block";
