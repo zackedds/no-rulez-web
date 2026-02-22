@@ -902,9 +902,9 @@
         stopPolling();
         $("waiting-turn").classList.add("hidden");
 
-        // Fire off image generation async for online turns
-        if (g.image_safe && g.image_prompt) {
-          generateImage(g.image_prompt);
+        // Use server-generated image URL (shared between both players)
+        if (g.image_url) {
+          showImage(g.image_url);
         } else {
           $("scene-image-wrapper").style.display = "none";
           document.querySelector(".scene-container").style.display = "block";
@@ -1158,11 +1158,12 @@
       targetLine.appendChild(lbl);
       targetLine.appendChild(txt);
 
-      // Fire off image generation async
-      if (g.image_safe && g.image_prompt) {
-        generateImage(g.image_prompt);
+      // Use server-generated image URL (shared between both players)
+      if (g.image_url) {
+        showImage(g.image_url);
       } else {
         $("scene-image-wrapper").style.display = "none";
+        document.querySelector(".scene-container").style.display = "block";
       }
 
       if (g.narrative) await typewrite($("narrative"), g.narrative);
@@ -1228,11 +1229,30 @@
     }
   }
 
-  function generateImage(prompt) {
-    if (!prompt) return;
-    const wrapper = $("scene-image-wrapper");
-    wrapper.style.display = "block";
+  // Show a pre-generated image URL (used for online multiplayer)
+  function showImage(url) {
+    var wrapper = $("scene-image-wrapper");
     var sceneContainer = document.querySelector(".scene-container");
+    wrapper.style.display = "block";
+    wrapper.innerHTML = "";
+    sceneContainer.style.display = "none";
+    var img = document.createElement("img");
+    img.src = url;
+    img.alt = "Battle scene";
+    img.onload = function() { wrapper.innerHTML = ""; wrapper.appendChild(img); };
+    img.onerror = function() { wrapper.style.display = "none"; sceneContainer.style.display = "block"; };
+  }
+
+  // Generate image client-side (used for local/AI games)
+  function generateImage(prompt) {
+    if (!prompt) {
+      $("scene-image-wrapper").style.display = "none";
+      document.querySelector(".scene-container").style.display = "block";
+      return;
+    }
+    var wrapper = $("scene-image-wrapper");
+    var sceneContainer = document.querySelector(".scene-container");
+    wrapper.style.display = "block";
     wrapper.innerHTML = '<div class="img-loading">Generating image...</div>';
     sceneContainer.style.display = "none";
     fetch("/api/image", {
@@ -1243,7 +1263,7 @@
     .then(r => r.json())
     .then(data => {
       if (data.image_url) {
-        const img = document.createElement("img");
+        var img = document.createElement("img");
         img.src = data.image_url;
         img.alt = "Battle scene";
         img.onload = function() { wrapper.innerHTML = ""; wrapper.appendChild(img); };
@@ -1253,7 +1273,7 @@
         sceneContainer.style.display = "block";
       }
     })
-    .catch(() => { wrapper.style.display = "none"; sceneContainer.style.display = "block"; });
+    .catch(function() { wrapper.style.display = "none"; sceneContainer.style.display = "block"; });
   }
 
   async function resolveAction(playerName, playerNum, action) {

@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from _shared import (
     kv_set, kv_get, sanitize_action, call_deepseek, parse_response,
-    clamp_hp, build_turn_prompt, REFEREE_PROMPT,
+    clamp_hp, build_turn_prompt, REFEREE_PROMPT, generate_image,
 )
 
 
@@ -77,6 +77,13 @@ class handler(BaseHTTPRequestHandler):
         game["scene"] = scene
         game["image_safe"] = state_update.get("image_safe", False)
         game["image_prompt"] = state_update.get("image_prompt", "")
+
+        # Generate image server-side so both players share the same one
+        image_url = None
+        if game["image_safe"] and game["image_prompt"]:
+            image_url = generate_image(game["image_prompt"])
+        game["image_url"] = image_url
+
         game["turn"] = game.get("turn", 1) + 1
         game["current_player"] = 2 if player_num == 1 else 1
         game["last_updated"] = time.time()

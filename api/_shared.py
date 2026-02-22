@@ -212,3 +212,69 @@ SAFE_CHARS = "0123456789"
 
 def generate_code():
     return "".join(random.choice(SAFE_CHARS) for _ in range(6))
+
+
+# --- Image generation ---
+
+REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN", "")
+REPLICATE_MODEL_URL = "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions"
+
+def generate_image(prompt):
+    """Call Replicate FLUX-schnell and return image URL, or None on failure."""
+    if not prompt or not REPLICATE_API_TOKEN:
+        return None
+
+    body = json.dumps({
+        "input": {
+            "prompt": prompt,
+            "num_outputs": 1,
+            "aspect_ratio": "16:9",
+            "output_format": "webp",
+            "output_quality": 80,
+        }
+    }).encode("utf-8")
+
+    req = urllib.request.Request(
+        REPLICATE_MODEL_URL,
+        data=body,
+        headers={
+            "Authorization": f"Bearer {REPLICATE_API_TOKEN}",
+            "Content-Type": "application/json",
+            "Prefer": "wait",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+
+        output = result.get("output")
+        if output and isinstance(output, list) and len(output) > 0:
+            return output[0] if isinstance(output[0], str) else str(output[0])
+
+        # Poll fallback
+        poll_url = result.get("urls", {}).get("get")
+        if not poll_url:
+            return None
+
+        for _ in range(15):
+            time.sleep(2)
+            poll_req = urllib.request.Request(
+                poll_url,
+                headers={"Authorization": f"Bearer {REPLICATE_API_TOKEN}"},
+            )
+            with urllib.request.urlopen(poll_req, timeout=10) as poll_resp:
+                poll_result = json.loads(poll_resp.read().decode("utf-8"))
+
+            status = poll_result.get("status")
+            if status == "succeeded":
+                out = poll_result.get("output", [])
+                if out:
+                    return out[0] if isinstance(out[0], str) else str(out[0])
+            elif status == "failed":
+                return None
+
+        return None
+    except Exception:
+        return None
