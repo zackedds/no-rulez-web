@@ -168,6 +168,25 @@
   }
   .back-btn:hover { border-color: #888; color: #aaa; }
 
+  .share-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #2a2a4e;
+    color: #50fa7b;
+    border: 1px solid #50fa7b;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 4px;
+  }
+  .share-btn:hover { background: #3a3a5e; }
+  .share-btn-alt {
+    color: #f1fa8c;
+    border-color: #f1fa8c;
+  }
+
   /* Game code badge */
   .code-badge {
     position: absolute;
@@ -764,6 +783,45 @@
     codeEl.className = "game-code-display";
     codeEl.textContent = code;
     box.appendChild(codeEl);
+
+    // Share link
+    const joinUrl = window.location.origin + "?join=" + code;
+    const shareRow = document.createElement("div");
+    shareRow.style.cssText = "margin: 10px 0; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;";
+
+    const shareBtn = document.createElement("a");
+    shareBtn.className = "share-btn";
+    shareBtn.textContent = "Send via iMessage";
+    shareBtn.href = "sms:&body=" + encodeURIComponent("Join my NO RULEZ battle! " + joinUrl);
+    shareRow.appendChild(shareBtn);
+
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "share-btn share-btn-alt";
+    copyBtn.textContent = "Copy Link";
+    copyBtn.onclick = function() {
+      navigator.clipboard.writeText(joinUrl).then(function() {
+        copyBtn.textContent = "Copied!";
+        setTimeout(function() { copyBtn.textContent = "Copy Link"; }, 2000);
+      }).catch(function() {
+        // Fallback
+        var ta = document.createElement("textarea");
+        ta.value = joinUrl;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        copyBtn.textContent = "Copied!";
+        setTimeout(function() { copyBtn.textContent = "Copy Link"; }, 2000);
+      });
+    };
+    shareRow.appendChild(copyBtn);
+    box.appendChild(shareRow);
+
+    const orDiv = document.createElement("div");
+    orDiv.style.cssText = "color: #555; font-size: 11px; margin: 4px 0;";
+    orDiv.textContent = "or share the code above";
+    box.appendChild(orDiv);
+
     const w = document.createElement("div");
     w.className = "waiting-msg";
     w.innerHTML = 'Waiting for opponent to join <span class="dot-pulse"><span>.</span><span>.</span><span>.</span></span>';
@@ -1408,6 +1466,56 @@
     $("game-over").style.display = "block";
     $("game-over-winner").textContent = winner + " WINS THE MATCH!";
   }
+
+  // Auto-join from URL parameter (?join=CODE)
+  (function checkJoinUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var joinCode = params.get("join");
+    if (joinCode) {
+      // Clean the URL without reloading
+      window.history.replaceState({}, "", window.location.pathname);
+      // Navigate to online > join with code pre-filled
+      mode = "online";
+      var box = $("name-inputs");
+      box.classList.remove("hidden");
+      box.innerHTML = "";
+      var label = document.createElement("div");
+      label.textContent = "Your name:";
+      label.style.color = "#6272a4";
+      label.style.fontWeight = "bold";
+      box.appendChild(label);
+      var nameInp = document.createElement("input");
+      nameInp.className = "name-input";
+      nameInp.maxLength = 30;
+      nameInp.placeholder = "Enter your name";
+      box.appendChild(nameInp);
+      box.appendChild(document.createElement("br"));
+      var codeLabel = document.createElement("div");
+      codeLabel.style.cssText = "color: #50fa7b; font-weight: bold; margin-top: 10px;";
+      codeLabel.textContent = "Game code:";
+      box.appendChild(codeLabel);
+      var codeShow = document.createElement("div");
+      codeShow.style.cssText = "color: #50fa7b; font-size: 24px; font-weight: 900; letter-spacing: 0.2em; margin: 5px 0;";
+      codeShow.textContent = joinCode;
+      box.appendChild(codeShow);
+      var err = document.createElement("div");
+      err.className = "error-msg";
+      box.appendChild(err);
+      var btn = document.createElement("button");
+      btn.className = "start-btn";
+      btn.textContent = "JOIN GAME";
+      btn.onclick = function() { doJoin(nameInp.value.trim(), joinCode, btn, err); };
+      box.appendChild(btn);
+      nameInp.addEventListener("keydown", function(e) { if (e.key === "Enter") btn.click(); });
+      var back = document.createElement("button");
+      back.className = "back-btn";
+      back.textContent = "← Back";
+      back.onclick = function() { backToMenu(); };
+      box.appendChild(document.createElement("br"));
+      box.appendChild(back);
+      nameInp.focus();
+    }
+  })();
 
 })();
 </script>
