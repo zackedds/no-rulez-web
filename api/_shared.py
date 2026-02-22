@@ -23,7 +23,9 @@ CORE PRINCIPLES:
 - REWARD CREATIVITY. A player who says "I summon a philosophical paradox that makes your weapons question their own existence" should be rewarded more than "I shoot you." Unique, funny, or clever actions deal more damage and have cooler effects.
 - DRAMATIC NARRATION. You are a hype announcer, a fantasy author, and a comedian rolled into one. Make every turn feel epic. Short punchy sentences. Exclamation marks welcome.
 - KEEP IT MOVING. Don't let the game stall. If someone builds only defenses, make something happen anyway. The battlefield is alive.
-- PROPORTIONAL DAMAGE. Typical damage range is 5-25 HP. Extraordinary moves can do up to 35. Defensive moves can heal 5-15 HP. No move does more than 40 damage or heals more than 20 HP. Starting HP is 100.
+- PROPORTIONAL DAMAGE. Typical damage range is 5-25 HP. Extraordinary moves can do up to 35. No move does more than 35 damage. Starting HP is 100.
+- HEALING LIMITS. A defensive/healing move can restore 5-10 HP max. If a player heals, they deal ZERO damage that turn — you either attack OR heal, never both in the same move. A move that "attacks and also heals" should only get the attack damage with no healing.
+- NO REPEAT BONUS. If a player uses the same attack or a very similar attack as a previous turn, it should do LESS damage, not more. The referee should call it out ("Same trick again? The arena yawns.") and reduce damage by at least half. Creativity is rewarded, repetition is punished. A player spamming the same move should see diminishing returns every time.
 - STATE DECAY. The battlefield should feel FRESH each turn, not like a cluttered junkyard. After big events (nukes, supernovas, etc.), the aftermath settles quickly. Craters fill in, radiation fades, wreckage gets cleared by the arena itself. Only keep details that are ACTIVELY RELEVANT to the current moment. The situation field should be 1 short sentence about what matters RIGHT NOW, not a history of everything that ever happened. Think of it like a movie — the camera moves on.
 
 YOU MUST RESPOND IN EXACTLY THIS FORMAT (use these exact markers on their own line):
@@ -149,11 +151,35 @@ def sanitize_action(action):
 
 
 def clamp_hp(old_p1, old_p2, state_update):
-    """Clamp HP changes to valid ranges."""
-    new_p1 = max(old_p1 - 40, min(old_p1 + 20, state_update.get("p1_hp", old_p1)))
-    new_p2 = max(old_p2 - 40, min(old_p2 + 20, state_update.get("p2_hp", old_p2)))
-    new_p1 = max(0, min(100, new_p1))
-    new_p2 = max(0, min(100, new_p2))
+    """Clamp HP changes to valid ranges. Max 35 damage, max 10 heal, no attack+heal combo."""
+    raw_p1 = state_update.get("p1_hp", old_p1)
+    raw_p2 = state_update.get("p2_hp", old_p2)
+
+    # Calculate deltas
+    d1 = raw_p1 - old_p1  # positive = heal, negative = damage taken
+    d2 = raw_p2 - old_p2
+
+    # Clamp damage to max 35, healing to max 10
+    d1 = max(-35, min(10, d1))
+    d2 = max(-35, min(10, d2))
+
+    # Prevent attack+heal combo: if one heals and the other takes damage, that's fine
+    # But if a player both heals AND deals damage in one move, cap the smaller effect
+    # (If p1 heals and p2 takes damage from the same move, the attacker is current player)
+    if d1 > 0 and d2 < 0:
+        # p1 healed and p2 took damage — pick the bigger effect, nerf the smaller
+        if abs(d2) > d1:
+            d1 = 0  # no healing if you dealt more damage
+        else:
+            d2 = max(d2, -10)  # minor damage if mostly healing
+    elif d2 > 0 and d1 < 0:
+        if abs(d1) > d2:
+            d2 = 0
+        else:
+            d1 = max(d1, -10)
+
+    new_p1 = max(0, min(100, old_p1 + d1))
+    new_p2 = max(0, min(100, old_p2 + d2))
     return new_p1, new_p2
 
 
