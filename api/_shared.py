@@ -37,7 +37,7 @@ YOU MUST RESPOND IN EXACTLY THIS FORMAT (use these exact markers on their own li
 ASCII art scene. This is the FALLBACK when images can't be generated. If image_safe is true, you can keep this minimal (4-6 lines) since a real image will replace it. If image_safe is false, go all out: 8-12 lines tall, up to 50 characters wide, show both players and the action with detail.
 
 ===STATE===
-{"p1_hp": <int>, "p2_hp": <int>, "situation": "<one short sentence: what matters right now>", "last_action": "<what just happened in one sentence>", "image_safe": <true or false>, "image_prompt": "<visual scene description for AI image generation, or empty string>"}
+{"p1_hp": <int>, "p2_hp": <int>, "situation": "<one short sentence: what matters right now>", "last_action": "<what just happened in one sentence>", "image_safe": <true or false>, "image_prompt": "<visual scene description for AI image generation, or empty string>", "p1_look": "<character 1 visual appearance — invent on first turn, then keep unchanged>", "p2_look": "<character 2 visual appearance — invent on first turn, then keep unchanged>"}
 
 CRITICAL RULES FOR YOUR RESPONSE:
 - Output ONLY the three sections above with their markers. Nothing before ===NARRATIVE===, nothing after the JSON.
@@ -55,14 +55,17 @@ IMAGE GENERATION RULES:
 - Keep it fun and creative — explosions, absurd weapons, cosmic battles, summoned creatures are all GREAT image prompts. Just no gore, blood, nudity, or sexual content.
 
 IMAGE PROMPT STYLE GUIDE (CRITICAL — follow this EVERY time for visual consistency):
-- "image_prompt" should be 2-3 sentences describing the scene for an AI image generator.
-- ALWAYS begin the prompt with this style prefix: "Stylized 3D render, Pixar-meets-Fortnite aesthetic, vibrant saturated colors, dynamic action pose, exaggerated proportions, soft cel-shading with dramatic cinematic lighting, fun and energetic mood."
-- Then describe the specific scene: the two characters (as cartoonish warriors/fighters), what action is happening, the environment, any special effects (explosions, lightning, magic, etc).
-- Characters should feel like fun cartoon battle characters — expressive faces, exaggerated poses, bold outlines. Think Clash Royale or Overwatch character style.
-- Environments should be colorful and stylized — not photorealistic. Bright skies, glowing effects, stylized arenas.
-- Keep the SAME art style every single turn. Never switch to photorealistic, anime, pixel art, or any other style. Always the same Pixar/Fortnite 3D cartoon look.
+- "image_prompt" should be 2-3 sentences describing the scene for an AI image generator. Do NOT include any style keywords — a style suffix is appended automatically. Focus ONLY on describing the scene, characters, action, and environment.
+- Describe the specific scene: the two characters, what action is happening, the environment, and any special effects.
+- CHARACTER CONSISTENCY IS CRITICAL: Always describe both characters using the exact same visual appearance every turn. Use the p1_look and p2_look fields from the game state — these lock in each character's appearance for the whole game. Include these descriptions in EVERY image prompt so the characters look the same across all images.
 - Describe dynamic camera angles: low angle hero shots, dramatic wide shots, over-the-shoulder action shots.
-- Include visual effects: particle effects, energy blasts, impact rings, motion blur, dramatic clouds, lens flares."""
+- Include visual effects: particle effects, energy blasts, impact rings, motion blur, dramatic clouds.
+
+CHARACTER APPEARANCE RULES:
+- In the ===STATE=== JSON, you MUST include "p1_look" and "p2_look" fields.
+- On the FIRST TURN (when no p1_look/p2_look exist in the game state), INVENT a distinctive visual appearance for each character based on their name. Be specific: body type, outfit, colors, hair, distinguishing features. Make them look like fun indie game characters — exaggerated, cartoonish, memorable. Each character should look VERY different from the other.
+- On ALL SUBSEQUENT TURNS, copy the EXACT p1_look and p2_look values from the game state into your response unchanged. Never modify them.
+- Use these appearance descriptions in every image_prompt so the image generator draws the same characters each time."""
 
 
 def call_deepseek(system_prompt, user_prompt, max_tokens=1000):
@@ -184,11 +187,19 @@ def clamp_hp(old_p1, old_p2, state_update):
 
 
 def build_turn_prompt(state, player_name, player_num, action):
+    p1_look = state.get('p1_look', '')
+    p2_look = state.get('p2_look', '')
+    char_lines = ""
+    if p1_look or p2_look:
+        char_lines = f"\n- {state.get('p1_name', 'P1')} appearance: {p1_look}\n- {state.get('p2_name', 'P2')} appearance: {p2_look}"
+    else:
+        char_lines = "\n- Character appearances: Not yet established. You MUST invent distinctive looks for both characters on this turn and include them in p1_look and p2_look."
+
     return f"""CURRENT GAME STATE:
 - {state.get('p1_name', 'P1')} (Player 1): {state.get('p1_hp', 100)} HP
 - {state.get('p2_name', 'P2')} (Player 2): {state.get('p2_hp', 100)} HP
 - Battlefield: {state.get('situation', 'An open arena, untouched and waiting for chaos.')}
-- Last action: {state.get('last_action', 'None yet. This is the first move!')}
+- Last action: {state.get('last_action', 'None yet. This is the first move!')}{char_lines}
 
 NOW ACTING: {player_name} (Player {player_num})
 ACTION: {action}
@@ -245,14 +256,18 @@ def generate_code():
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN", "")
 REPLICATE_MODEL_URL = "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions"
 
+IMAGE_STYLE_SUFFIX = "chaotic cartoon battle art, indie game style, exaggerated proportions, dynamic action pose, dark arena setting, vibrant saturated colors, warm fire accents, slightly rough and messy rendering, fun and over-the-top, comic book energy, no text, no watermark"
+
 def generate_image(prompt):
     """Call Replicate FLUX-schnell and return image URL, or None on failure."""
     if not prompt or not REPLICATE_API_TOKEN:
         return None
 
+    styled_prompt = f"{prompt} {IMAGE_STYLE_SUFFIX}"
+
     body = json.dumps({
         "input": {
-            "prompt": prompt,
+            "prompt": styled_prompt,
             "num_outputs": 1,
             "aspect_ratio": "16:9",
             "output_format": "webp",

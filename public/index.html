@@ -65,6 +65,13 @@
   }
 
   .setup { text-align: center; margin: 30px 0; }
+  .game-explainer {
+    color: #bd93f9;
+    font-size: 13px;
+    max-width: 420px;
+    margin: 0 auto 18px;
+    line-height: 1.5;
+  }
   .setup h2 { color: #f1fa8c; margin-bottom: 15px; }
   .mode-btn {
     display: block;
@@ -518,7 +525,10 @@
 
   <!-- Setup -->
   <div id="setup" class="setup">
-    <h2>SELECT MODE</h2>
+    <div class="game-explainer">
+      Two players. No rules. Describe <strong>ANY</strong> attack — summon black holes, weaponize philosophy, or throw a planet. An AI referee decides what happens.
+    </div>
+    <h2>CHOOSE YOUR BATTLE</h2>
     <button class="mode-btn" onclick="selectMode('pvp')">⚔️ LOCAL MULTIPLAYER</button>
     <button class="mode-btn" onclick="selectMode('online')">🌐 ONLINE MULTIPLAYER</button>
     <button class="mode-btn" onclick="selectMode('vs_ai')">🥊 VS BRAWLBOT AI</button>
@@ -1455,6 +1465,8 @@
       state.p2_hp = data.state.p2_hp;
       state.situation = data.state.situation;
       state.last_action = data.state.last_action;
+      if (data.state.p1_look) state.p1_look = data.state.p1_look;
+      if (data.state.p2_look) state.p2_look = data.state.p2_look;
       $("input-area").style.display = "none";
       hideLoading();
 

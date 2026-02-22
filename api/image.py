@@ -10,6 +10,8 @@ import urllib.error
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN", "")
 REPLICATE_MODEL_URL = "https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions"
 
+IMAGE_STYLE_SUFFIX = "chaotic cartoon battle art, indie game style, exaggerated proportions, dynamic action pose, dark arena setting, vibrant saturated colors, warm fire accents, slightly rough and messy rendering, fun and over-the-top, comic book energy, no text, no watermark"
+
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -33,10 +35,12 @@ class handler(BaseHTTPRequestHandler):
             self._respond(500, {"error": "Image generation not configured"})
             return
 
+        styled_prompt = f"{prompt} {IMAGE_STYLE_SUFFIX}"
+
         # Create prediction
         body = json.dumps({
             "input": {
-                "prompt": prompt,
+                "prompt": styled_prompt,
                 "num_outputs": 1,
                 "aspect_ratio": "16:9",
                 "output_format": "webp",

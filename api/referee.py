@@ -62,6 +62,8 @@ class handler(BaseHTTPRequestHandler):
                 "last_action": state_update.get("last_action", ""),
                 "image_safe": state_update.get("image_safe", False),
                 "image_prompt": state_update.get("image_prompt", ""),
+                "p1_look": state_update.get("p1_look", ""),
+                "p2_look": state_update.get("p2_look", ""),
             },
         })
 

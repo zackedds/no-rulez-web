@@ -78,6 +78,12 @@ class handler(BaseHTTPRequestHandler):
         game["image_safe"] = state_update.get("image_safe", False)
         game["image_prompt"] = state_update.get("image_prompt", "")
 
+        # Persist character appearances for visual consistency across turns
+        if state_update.get("p1_look"):
+            game["p1_look"] = state_update["p1_look"]
+        if state_update.get("p2_look"):
+            game["p2_look"] = state_update["p2_look"]
+
         # Generate image server-side so both players share the same one
         image_url = None
         if game["image_safe"] and game["image_prompt"]:
