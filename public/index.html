@@ -298,20 +298,22 @@
   }
   .hp-popup {
     position: absolute;
-    right: -5px;
-    top: -2px;
-    font-size: 14px;
+    right: -8px;
+    top: -6px;
+    font-size: 22px;
     font-weight: 900;
     pointer-events: none;
-    animation: hp-pop 1.5s ease-out forwards;
+    animation: hp-pop 1.8s ease-out forwards;
     z-index: 10;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
   }
   .hp-popup.damage { color: #ff5555; }
   .hp-popup.heal { color: #50fa7b; }
   @keyframes hp-pop {
-    0% { opacity: 1; transform: translateY(0); }
-    70% { opacity: 1; transform: translateY(-18px); }
-    100% { opacity: 0; transform: translateY(-28px); }
+    0% { opacity: 1; transform: translateY(0) scale(1.2); }
+    15% { opacity: 1; transform: translateY(-5px) scale(1); }
+    70% { opacity: 1; transform: translateY(-30px); }
+    100% { opacity: 0; transform: translateY(-42px); }
   }
   .hp-name {
     width: 120px;
