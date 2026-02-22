@@ -32,7 +32,7 @@ YOU MUST RESPOND IN EXACTLY THIS FORMAT (use these exact markers on their own li
 1-2 sentences MAX. Punchy, funny, dramatic. No filler. Address players by name.
 
 ===SCENE===
-ASCII art scene. ALWAYS 8-12 lines tall, up to 50 characters wide. Show both players and the action. Keep it simple and readable. NEVER go below 8 lines — fill the scene with environment details, action effects, or dramatic framing.
+ASCII art scene. This is the FALLBACK when images can't be generated. If image_safe is true, you can keep this minimal (4-6 lines) since a real image will replace it. If image_safe is false, go all out: 8-12 lines tall, up to 50 characters wide, show both players and the action with detail.
 
 ===STATE===
 {"p1_hp": <int>, "p2_hp": <int>, "situation": "<one short sentence: what matters right now>", "last_action": "<what just happened in one sentence>", "image_safe": <true or false>, "image_prompt": "<visual scene description for AI image generation, or empty string>"}
@@ -48,10 +48,19 @@ CRITICAL RULES FOR YOUR RESPONSE:
 
 IMAGE GENERATION RULES:
 - "image_safe" must be true or false. Set to true if the scene can be illustrated as a fun, dramatic, creative battle image. Set to false if the scene involves graphic gore, nudity, sexually explicit content, or extreme real-world violence.
-- "image_prompt" is a 1-2 sentence visual description of the scene for an AI image generator. Describe it like a dynamic illustration: the characters, the action, the environment, the mood. Make it vivid and cinematic. Use art style cues like "dramatic lighting", "comic book style", "epic battle scene".
 - If image_safe is false, set image_prompt to an empty string "".
-- The image prompt should NOT include text/words to render — image generators can't spell. Describe visuals only.
-- Keep it fun and creative — explosions, absurd weapons, cosmic battles, summoned creatures are all GREAT image prompts. Just no gore, blood, nudity, or sexual content."""
+- The image prompt should NOT include text/words/letters to render — image generators can't spell. Describe visuals only.
+- Keep it fun and creative — explosions, absurd weapons, cosmic battles, summoned creatures are all GREAT image prompts. Just no gore, blood, nudity, or sexual content.
+
+IMAGE PROMPT STYLE GUIDE (CRITICAL — follow this EVERY time for visual consistency):
+- "image_prompt" should be 2-3 sentences describing the scene for an AI image generator.
+- ALWAYS begin the prompt with this style prefix: "Stylized 3D render, Pixar-meets-Fortnite aesthetic, vibrant saturated colors, dynamic action pose, exaggerated proportions, soft cel-shading with dramatic cinematic lighting, fun and energetic mood."
+- Then describe the specific scene: the two characters (as cartoonish warriors/fighters), what action is happening, the environment, any special effects (explosions, lightning, magic, etc).
+- Characters should feel like fun cartoon battle characters — expressive faces, exaggerated poses, bold outlines. Think Clash Royale or Overwatch character style.
+- Environments should be colorful and stylized — not photorealistic. Bright skies, glowing effects, stylized arenas.
+- Keep the SAME art style every single turn. Never switch to photorealistic, anime, pixel art, or any other style. Always the same Pixar/Fortnite 3D cartoon look.
+- Describe dynamic camera angles: low angle hero shots, dramatic wide shots, over-the-shoulder action shots.
+- Include visual effects: particle effects, energy blasts, impact rings, motion blur, dramatic clouds, lens flares."""
 
 
 def call_deepseek(system_prompt, user_prompt, max_tokens=1000):

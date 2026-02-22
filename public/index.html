@@ -907,6 +907,7 @@
           generateImage(g.image_prompt);
         } else {
           $("scene-image-wrapper").style.display = "none";
+          document.querySelector(".scene-container").style.display = "block";
         }
 
         (async function() {
@@ -1231,7 +1232,9 @@
     if (!prompt) return;
     const wrapper = $("scene-image-wrapper");
     wrapper.style.display = "block";
+    var sceneContainer = document.querySelector(".scene-container");
     wrapper.innerHTML = '<div class="img-loading">Generating image...</div>';
+    sceneContainer.style.display = "none";
     fetch("/api/image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1244,12 +1247,13 @@
         img.src = data.image_url;
         img.alt = "Battle scene";
         img.onload = function() { wrapper.innerHTML = ""; wrapper.appendChild(img); };
-        img.onerror = function() { wrapper.style.display = "none"; };
+        img.onerror = function() { wrapper.style.display = "none"; sceneContainer.style.display = "block"; };
       } else {
         wrapper.style.display = "none";
+        sceneContainer.style.display = "block";
       }
     })
-    .catch(() => { wrapper.style.display = "none"; });
+    .catch(() => { wrapper.style.display = "none"; sceneContainer.style.display = "block"; });
   }
 
   async function resolveAction(playerName, playerNum, action) {
