@@ -1284,8 +1284,9 @@
     }
   };
 
-  async function submitOnlineAction(action) {
-    showLoading("THE REFEREE DELIBERATES", "Judging your move...");
+  async function submitOnlineAction(action, _attempt) {
+    var attempt = _attempt || 0;
+    if (attempt === 0) showLoading("THE REFEREE DELIBERATES", "Judging your move...");
     try {
       const resp = await fetch("/api/turn", {
         method: "POST",
@@ -1294,6 +1295,11 @@
       });
       const data = await resp.json();
       if (!resp.ok) {
+        if (attempt < MAX_AUTO_RETRIES) {
+          $("loading-sub").textContent = retrySubText(attempt + 1);
+          await new Promise(r => setTimeout(r, AUTO_RETRY_DELAY));
+          return submitOnlineAction(action, attempt + 1);
+        }
         $("status").textContent = data.error || "Error";
         pendingRetry = { type: "online", action };
         $("retry-btn").classList.remove("hidden");
@@ -1339,6 +1345,11 @@
 
       onlinePromptTurn(g);
     } catch (e) {
+      if (attempt < MAX_AUTO_RETRIES) {
+        $("loading-sub").textContent = retrySubText(attempt + 1);
+        await new Promise(r => setTimeout(r, AUTO_RETRY_DELAY));
+        return submitOnlineAction(action, attempt + 1);
+      }
       $("status").textContent = "Network error. Try again.";
       pendingRetry = { type: "online", action };
       $("retry-btn").classList.remove("hidden");
@@ -1366,10 +1377,11 @@
     setTimeout(function() { window.scrollTo(0, 0); }, 300);
   });
 
-  async function doAiTurn() {
+  async function doAiTurn(_attempt) {
+    var attempt = _attempt || 0;
     const pn = currentPlayer();
     const name = pn === 1 ? state.p1_name : state.p2_name;
-    showLoading(name.toUpperCase() + " IS THINKING", "Plotting something devious...");
+    if (attempt === 0) showLoading(name.toUpperCase() + " IS THINKING", "Plotting something devious...");
     try {
       const resp = await fetch("/api/opponent", {
         method: "POST",
@@ -1377,6 +1389,11 @@
         body: JSON.stringify({ state: state, ai_name: name, player_num: pn }),
       });
       if (!resp.ok) {
+        if (attempt < MAX_AUTO_RETRIES) {
+          $("loading-sub").textContent = retrySubText(attempt + 1);
+          await new Promise(r => setTimeout(r, AUTO_RETRY_DELAY));
+          return doAiTurn(attempt + 1);
+        }
         const err = await resp.json().catch(() => ({ error: "Request failed" }));
         $("status").textContent = "Error: " + (err.error || "Unknown");
         pendingRetry = { type: "ai", pn, name };
@@ -1390,6 +1407,11 @@
       $("status").textContent = name + ": " + action;
       resolveAction(name, pn, action);
     } catch (e) {
+      if (attempt < MAX_AUTO_RETRIES) {
+        $("loading-sub").textContent = retrySubText(attempt + 1);
+        await new Promise(r => setTimeout(r, AUTO_RETRY_DELAY));
+        return doAiTurn(attempt + 1);
+      }
       $("status").textContent = "Network error. Check your connection.";
       pendingRetry = { type: "ai", pn, name };
       $("retry-btn").classList.remove("hidden");
@@ -1443,8 +1465,16 @@
     .catch(function() { wrapper.style.display = "none"; sceneContainer.style.display = "block"; });
   }
 
-  async function resolveAction(playerName, playerNum, action) {
-    showLoading("THE REFEREE DELIBERATES", "Judging your move...");
+  var MAX_AUTO_RETRIES = 3;
+  var AUTO_RETRY_DELAY = 2000; // ms
+
+  function retrySubText(attempt) {
+    return "Hiccup! Retrying... (" + attempt + "/" + MAX_AUTO_RETRIES + ")";
+  }
+
+  async function resolveAction(playerName, playerNum, action, _attempt) {
+    var attempt = _attempt || 0;
+    if (attempt === 0) showLoading("THE REFEREE DELIBERATES", "Judging your move...");
     try {
       const resp = await fetch("/api/referee", {
         method: "POST",
@@ -1453,6 +1483,11 @@
       });
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: "Request failed" }));
+        if (attempt < MAX_AUTO_RETRIES) {
+          $("loading-sub").textContent = retrySubText(attempt + 1);
+          await new Promise(r => setTimeout(r, AUTO_RETRY_DELAY));
+          return resolveAction(playerName, playerNum, action, attempt + 1);
+        }
         const msg = err.error || "Unknown error";
         $("status").textContent = msg.includes("fumbled") ? "Referee fumbled! Try again." : "Error: " + msg;
         pendingRetry = { type: "resolve", playerName, playerNum, action };
@@ -1483,6 +1518,11 @@
       turn++;
       promptTurn();
     } catch (e) {
+      if (attempt < MAX_AUTO_RETRIES) {
+        $("loading-sub").textContent = retrySubText(attempt + 1);
+        await new Promise(r => setTimeout(r, AUTO_RETRY_DELAY));
+        return resolveAction(playerName, playerNum, action, attempt + 1);
+      }
       $("status").textContent = "Network error. Check your connection.";
       pendingRetry = { type: "resolve", playerName, playerNum, action };
       $("retry-btn").classList.remove("hidden");
