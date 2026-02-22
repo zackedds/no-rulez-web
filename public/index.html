@@ -294,6 +294,24 @@
     align-items: center;
     margin: 6px 0;
     font-size: 13px;
+    position: relative;
+  }
+  .hp-popup {
+    position: absolute;
+    right: -5px;
+    top: -2px;
+    font-size: 14px;
+    font-weight: 900;
+    pointer-events: none;
+    animation: hp-pop 1.5s ease-out forwards;
+    z-index: 10;
+  }
+  .hp-popup.damage { color: #ff5555; }
+  .hp-popup.heal { color: #50fa7b; }
+  @keyframes hp-pop {
+    0% { opacity: 1; transform: translateY(0); }
+    70% { opacity: 1; transform: translateY(-18px); }
+    100% { opacity: 0; transform: translateY(-28px); }
   }
   .hp-name {
     width: 120px;
@@ -912,6 +930,7 @@
   // --- Online Game ---
   function startOnlineGame(game) {
     setGameMode(true);
+    prevP1HP = 100; prevP2HP = 100;
     state = {
       p1_name: game.p1_name,
       p2_name: game.p2_name,
@@ -1074,6 +1093,7 @@
   // --- Local game (PvP + vs AI) ---
   function startLocalGame(p1, p2) {
     setGameMode(true);
+    prevP1HP = 100; prevP2HP = 100;
     state = {
       p1_name: p1,
       p2_name: p2,
@@ -1111,13 +1131,31 @@
     promptTurn();
   }
 
+  var prevP1HP = 100, prevP2HP = 100;
+
+  function showHpPopup(rowId, delta) {
+    if (delta === 0) return;
+    var row = $(rowId).closest(".hp-row") || $(rowId).parentElement;
+    var popup = document.createElement("span");
+    popup.className = "hp-popup " + (delta > 0 ? "heal" : "damage");
+    popup.textContent = (delta > 0 ? "+" : "") + delta;
+    row.appendChild(popup);
+    setTimeout(function() { if (popup.parentElement) popup.remove(); }, 1600);
+  }
+
   function updateHP() {
+    var d1 = state.p1_hp - prevP1HP;
+    var d2 = state.p2_hp - prevP2HP;
     $("p1-hp").textContent = state.p1_hp + " HP";
     $("p2-hp").textContent = state.p2_hp + " HP";
     $("p1-bar").style.width = state.p1_hp + "%";
     $("p2-bar").style.width = state.p2_hp + "%";
     $("p1-bar").style.backgroundColor = state.p1_hp <= 25 ? "#ff2222" : "#ff5555";
     $("p2-bar").style.backgroundColor = state.p2_hp <= 25 ? "#4455aa" : "#6272a4";
+    if (d1 !== 0) showHpPopup("p1-hp", d1);
+    if (d2 !== 0) showHpPopup("p2-hp", d2);
+    prevP1HP = state.p1_hp;
+    prevP2HP = state.p2_hp;
   }
 
   function updateActionsDisplay() {
